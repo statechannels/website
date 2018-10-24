@@ -1,0 +1,78 @@
+// Colors
+$c-black: #101010;
+$c-white: #fff;
+$c-blue: #2f80ed;
+$c-darkgrey: #707070;
+$c-lightgrey: #e6e6e6;
+
+
+// Font Sizes
+$f-rem: 16px;
+$f-xs: 0.875rem;
+$f-sm: 1.125rem;
+$f-base: 1.25rem;
+$f-subheading: 1.625rem;
+$f-heading: 2.5rem;
+
+
+$site-max-width: 1140px;
+
+
+// Screens
+$screen-md: 1000px;
+$screen-tablet: 767px;
+$screen-mobile: 600px;
+$screen-xs: 374px;
+
+
+// Transitions
+$transition-speed: 200ms;
+
+
+@import url('https://fonts.googleapis.com/css?family=Chivo:300,400');
+@import 'box-sizing';
+@import 'resets';
+@import 'animations';
+@import 'typography';
+@import 'layout';
+
+@import 'components/navbar';
+@import 'components/mobile-menu';
+@import 'components/callout';
+@import 'components/hero';
+@import 'components/list';
+@import 'components/team-list';
+@import 'components/footer';
+@import 'components/buttons';
+
+@import 'pages/technology';
+@import 'pages/team';
+@import 'pages/statechannels';
+
+@import 'helpers';
+
+
+.flexer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+
+// Initial tech graphic loading state
+.graphic1Load {
+  animation: graphic1 4s;
+  animation-fill-mode: forwards;
+}
+
+.graphic3Load {
+  animation: graphic3 4s;
+  animation-fill-mode: forwards;
+}
+
+@media screen and (max-width: $screen-md) {
+  .graphic1Load,
+  .graphic3Load {
+    animation: initial;
+  }
+}

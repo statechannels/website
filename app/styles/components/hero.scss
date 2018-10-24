@@ -1,0 +1,59 @@
+.hero {
+  // padding-top: 9rem;
+}
+
+.hero__heading {
+  @include f-heading;
+  margin-bottom: 2.25rem;
+  font-weight: normal;
+}
+
+.hero__subheading {
+  @include f-subheading;
+  color: $c-darkgrey;
+  line-height: 1.45;
+  font-weight: 300;
+  margin-bottom: 0;
+}
+
+.hero__body {
+  @include f-base;
+  font-weight: 300;
+  line-height: 1.6;
+  color: $c-darkgrey;
+}
+
+.hero__cta {
+  display: block;
+  margin-top: 3.125rem;
+}
+
+
+@media screen and (max-width: $screen-md) {
+  .hero {
+    padding-top: 2.5rem;
+  }
+
+  .hero__heading {
+    margin-bottom: 1.125rem;
+  }
+
+  .hero__cta {
+    margin-top: 1.25rem;
+  }
+}
+
+
+@media screen and (max-width: $screen-tablet) {
+  .hero {
+    padding-top: 0;
+  }
+
+  .hero__heading {
+    margin-bottom: 1.125rem;
+  }
+
+  .hero__cta {
+    margin-top: 1.25rem;
+  }
+}

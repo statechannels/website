@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  font-family: 'Chivo', sans-serif;
+  font-size: $f-rem;
+  color: $c-black;
+  background: $c-white;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol {
+  margin: 1rem 0;
+  font-weight: normal;
+}
+
+p {
+  line-height: 1.6;
+}
+
+ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: $c-blue;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color $transition-speed;
+}
+
+button {
+  border: 0;
+  background: none;
+}

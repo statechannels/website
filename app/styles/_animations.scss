@@ -1,0 +1,86 @@
+@keyframes hide {
+  0% {
+    opacity: 1;
+    transform: translateY(0)
+  }
+
+  50% {
+    opacity: 0;
+    transform: translateY(-25%)
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(50%)
+  }
+}
+
+@keyframes show {
+  0% {
+    opacity: 0;
+    transform: translateY(50%)
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0)
+  }
+}
+
+
+.content-show {
+  animation: show 1s;
+  animation-fill-mode: forwards;
+  z-index: 1;
+}
+
+.content-hide {
+  animation: hide 2s;
+  animation-fill-mode: forwards;
+  z-index: 0;
+}
+
+
+// Images
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes graphic1 {
+  0% {
+    transform: translateY(50%);
+  }
+
+  75% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(0) scale(1.2);
+  }
+}
+
+
+@keyframes graphic3 {
+  0% {
+    transform: translateY(-50%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+
+@media screen and (max-width: $screen-md) {
+  .content-show,
+  .content-hide {
+    animation: initial;
+  }
+}

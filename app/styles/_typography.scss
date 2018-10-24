@@ -1,0 +1,51 @@
+@mixin f-rem {
+  font-size: $f-rem;
+}
+
+@mixin f-xs {
+  font-size: $f-xs;
+
+  @media screen and (max-width: $screen-mobile) {
+    font-size: $f-xs * 0.75;
+  }
+}
+
+@mixin f-sm {
+  font-size: $f-sm;
+
+  @media screen and (max-width: $screen-mobile) {
+    font-size: $f-sm * 0.75;
+  }
+}
+
+@mixin f-base {
+  font-size: $f-base;
+
+  @media screen and (max-width: $screen-mobile) {
+    font-size: $f-base * 0.75;
+  }
+}
+
+@mixin f-subheading {
+  font-size: $f-subheading;
+
+  @media screen and (max-width: $screen-mobile) {
+    font-size: $f-subheading * 0.75;
+  }
+}
+
+@mixin f-heading {
+  font-size: $f-heading;
+
+  @media screen and (max-width: $screen-mobile) {
+    font-size: $f-heading * 0.75;
+  }
+}
+
+.f-light {
+  font-weight: 300;
+}
+
+.f-base {
+  @include f-base;
+}

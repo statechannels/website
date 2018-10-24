@@ -1,0 +1,44 @@
+.btn {
+  @include f-sm;
+  display: inline-block;
+  border: 0;
+  border-radius: 2px;
+  padding: 1rem 1.125rem;
+  text-align: center;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  background: none;
+  cursor: pointer;
+
+  &--stroke {
+    border: 1px solid $c-blue;
+    color: $c-blue;
+    transition: color $transition-speed, background-color $transition-speed;
+
+    &:hover {
+      background: $c-blue;
+      color: $c-white;
+    }
+  }
+
+  &--white-stroke {
+    border: 1px solid $c-white;
+    color: $c-white;
+    transition: background-color $transition-speed;
+
+    &:hover {
+      background: $c-blue;
+    }
+  }
+
+  &--solid {
+    border: 1px solid $c-blue;
+    background: $c-blue;
+    color: $c-white;
+  }
+
+  &--dark {
+    color: $c-black;
+    border: 1px solid $c-black;
+  }
+}

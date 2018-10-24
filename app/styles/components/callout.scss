@@ -1,0 +1,71 @@
+.section--callout {
+  position: relative;
+  display: flex;
+  flex-grow: 1;
+
+  > .container {
+    position: relative;
+    flex-grow: 1;
+  }
+}
+
+.callout-icon {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: -1;
+}
+
+.callout {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  transform: translateY(-50%);
+  z-index: 1;
+
+  &__content {
+    max-width: 50rem;
+
+    &__heading {
+      @include f-heading;
+      margin: 0 0 1.82rem;
+    }
+  }
+}
+
+
+@media screen and (max-width: $screen-tablet) {
+  .section--callout {
+    position: relative;
+
+    > .container {
+      position: relative;
+    }
+  }
+
+  .callout-icon {
+    top: 42.5%;
+    bottom: initial;
+    opacity: 0.25;
+    max-height: 40%;
+  }
+}
+
+@media screen and (max-width: $screen-xs) {
+  .section--callout {
+    padding: 4rem 1rem;
+  }
+
+  .callout-icon {
+    display: none;
+  }
+
+  .callout {
+    position: relative;
+    top: initial;
+    right: initial;
+    left: initial;
+    transform: initial;
+  }
+}
