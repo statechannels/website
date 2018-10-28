@@ -63,7 +63,7 @@
 
           <div class="tech-hero">
             <h2 class="tech-hero__heading">Technology</h2>
-            <p class="tech-hero__subheading">State channels are the foundational technology for useable distributed applications. They can be used in any interaction with a defined set of participants, such as payments or games.</p>
+            <p class="tech-hero__subheading">Counterfactual is comprised of several components: a library for off-chain applications, an intuitive generalized state channels protocol, and a set of Ethereum smart contracts.</p>
           </div>
 
           <div class="tech-content">
@@ -80,23 +80,25 @@
               <div class="tech-content__info__1">
                 <object class="md-only" data="./assets/animations/01.svg" type="image/svg+xml"></object>
                 <div class="inner-content">
-                  <h3 class="inner-content__title">A New Workflow for Dapps</h3>
+                  <h3 class="inner-content__title">An Off-Chain Application Library</h3>
                   <p class="inner-content__body">
-                    For developers, off-chain applications follow a different pattern than dapp developers might be used to. Instead of prompting users to sign and submit transactions that get sent to a blockchain network directly, users sign (perhaps automatically) transactions that _could_ be sent to a blockchain, but are instead sent directly to their counterparties.
+                    Instead of prompting users to sign and submit transactions that get sent to a blockchain network directly, users sign (sometimes automatically) commitments that <i>could</i> be sent to a blockchain, but are instead sent directly to their counterparties.
                   </p>
                   <p class="inner-content__body">
-                    Counterfactual provides a simple client library, similar to Web3, that applications can use to communicate to wallets that implement the protocol.
+                    Counterfactual provides a simple client library, similar to Web3, that applications can use to construct and transmit messages to their counterparties using the off-chain protocol.
                   </p>
+                  <a class="github-button" href="https://github.com/counterfactual/specs" data-size="large" aria-label="View counterfactual/specs on GitHub">View on Github</a>
                 </div>
               </div>
 
               <div class="tech-content__info__2">
                 <object class="md-only" data="./assets/animations/02.svg" type="image/svg+xml"></object>
                 <div class="inner-content">
-                  <h3 class="inner-content__title">A Protocol for State Channels</h3>
+                  <h3 class="inner-content__title">A Protocol for Generalized State Channels</h3>
                   <p class="inner-content__body">
-                    Counterfactual has defined a protocol for off chain applications that is maximally secure, flexible, and intuitive while also abstract enough to cover arbitrary blockchain transactions. At its core, the protocol introduces the notion of an `AppInstance` which can be installed, updated, and uninstalled within a state channel. Full specifications can be found <a href="https://github.com/counterfactual/specs">on Github</a>.
+                    Counterfactual defines a protocol for off chain applications that is maximally secure, flexible, and intuitive while remaining abstract enough to cover arbitrary blockchain transactions. At its core, the protocol is centered around a type of conditional transaction based on the outcome of an "<a href="https://github.com/counterfactual/specs/blob/master/01-contracts.md#appinstance">AppInstance</a>"; a state channel application. These applications can be installed, updated, and uninstalled within a state channel.
                   </p>
+                  <a class="github-button" href="https://github.com/counterfactual/specs" data-size="large" aria-label="View counterfactual/specs on GitHub">View on Github</a>
                 </div>
 
               </div>
@@ -104,10 +106,11 @@
               <div class="tech-content__info__3">
                 <object class="md-only" data="./assets/animations/03.svg" type="image/svg+xml"></object>
                 <div class="inner-content">
-                  <h3 class="inner-content__title">Built on the Ethereum Blockchain</h3>
+                  <h3 class="inner-content__title">Secured by the Ethereum Blockchain</h3>
                   <p class="inner-content__body">
-                    All transactions that users sign while using the protocol are ultimately designed such that they could be placed on the blockchain in the case of a dispute. Counterfactual implements the minimum functionality needed for dealing with state channels of abstract transactions by combining the best in class research from teams like L4, Magmo, Sprites, Pisa, and others into a single on-chain set of contracts. To read more about the design, check out the contracts <a href="https://github.com/counterfactual/contracts">on Github</a>.
+                    All transactions that users sign while using the protocol are ultimately designed such that they could be placed on the blockchain in the case of a party being unresponsive or attempting to deviate from the protocol. Counterfactual implements the minimum functionality needed for dealing with state channels of abstract transactions by combining the best in class research from teams like <a href="https://l4.ventures">L4</a>, <a href="https://magmo.com">Magmo</a>, <a href="https://arxiv.org/abs/1702.05812">Sprites</a>, <a href="https://perun.network">Perun</a>, and many others into a single on-chain set of contracts.
                   </p>
+                  <a class="github-button" href="https://github.com/counterfactual/specs/blob/master/01-contracts.md" data-size="large" aria-label="View counterfactual/specs on GitHub">View on Github</a>
                 </div>
 
               </div>
@@ -136,7 +139,7 @@
           </div>
 
           <p class="footer__right">
-            If you're interested in joining us, please send us an email at <a href="mailto:hello@counterfactual.com">hello@counterfactual.com</a>
+            If you're interested in joining us, please send us an email at <a href="mailto:hello@counterfactual.com">hello@counterfactual.com</a> or join us on <a href="https://discordapp.com/invite/VcTn7fh">Discord</a>
           </p>
         </footer>
 
@@ -148,5 +151,6 @@
   <!-- End Wrapper -->
 
   <script src="/app.js" charset="utf-8"></script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
 </body>
 </html>
