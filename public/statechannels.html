@@ -94,7 +94,7 @@
             <div class="statechannels__faq">
               <h3 class="statechannels__faq__title">How are state channels different from Plasma?</h3>
               <p class="statechannels__faq__body">
-                State channels perform under environments of unanimous consent amongst parties involved whereas Plasma does not have this restriction. In Plasma, the validator set is assumed to be different than the participant set whereas in state channels they are the same set. Additionally, Plasma requires publishing the merkle root of the off-chain state periodicaly, whereas state channels assume no on-chain operations will ever be necessary.
+                State channels function under the assumption of unanimous consent amongst parties involved whereas Plasma relies on merkle proofs submitted to the main chain by the Plasma validator(s).  As a result, changes made in a state channel achieve finality as soon as messages are signed and do not need to wait for confirmations in order to consider transactions completed and secure (state channels are the only stateful blockchain construction with this property). By contrast Plasma users must still wait for confirmations in order to consider their transactions completed and secure. In Plasma, the validator set is usually assumed to be different than and smaller than the participant set whereas in state channels they are the same set. Additionally, Plasma requires main chain transactions in order to publish the merkle root of the off-chain state periodicaly, whereas state channels do not necessarily assume that any on-chain operations will ever be necessary.
               </p>
             </div>
 
