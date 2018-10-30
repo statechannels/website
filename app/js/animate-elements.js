@@ -6,7 +6,7 @@ let graphic1 = {
   state: 'active',
   animation: bodymovin.loadAnimation({
     container: document.querySelector('.tech-content__graphics__item1'),
-    path: './layer1.json',
+    path: '../layer1.json',
     renderer: 'svg',
     autoplay: false,
     loop: false
@@ -18,7 +18,7 @@ let graphic2 = {
   state: 'inactive',
   animation: bodymovin.loadAnimation({
     container: document.querySelector('.tech-content__graphics__item2'),
-    path: './layer2.json',
+    path: '../layer2.json',
     renderer: 'svg',
     autoplay: false,
     loop: false
@@ -30,7 +30,7 @@ let graphic3 = {
   state: 'inactive',
   animation: bodymovin.loadAnimation({
     container: document.querySelector('.tech-content__graphics__item3'),
-    path: './layer3.json',
+    path: '../layer3.json',
     renderer: 'svg',
     autoplay: false,
     loop: false
