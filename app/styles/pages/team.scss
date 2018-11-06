@@ -24,13 +24,12 @@
 
     &__logos {
       display: flex;
-      justify-content: center;
-      align-items: center;
+      justify-content: space-around;
 
       > * {
         display: block;
         padding: 1rem;
-        // max-width: 12rem;
+        text-align: center;
 
         > * {
           display: block;
@@ -45,21 +44,38 @@
       }
     }
 
-    &__contributors {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      max-width: 24rem;
-      margin: 2rem auto 0;
-      padding: 1rem;
-      border-top: 1px dashed $c-lightgrey;
-
+    .member-list {
       > * {
-        width: 50%;
-        padding: 2rem 0;
+        padding: 1rem 0;
         font-size: $f-sm;
         color: $c-darkgrey;
         text-align: center;
+      }
+    }
+
+    &__contributors {
+      max-width: 24rem;
+      margin: 0 auto;
+      padding: 0 1rem 1rem;
+      border-top: 1px dashed $c-lightgrey;
+
+      &__title {
+        margin-top: 2rem;
+        text-align: center;
+      }
+
+      &__names {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        > * {
+          width: 50%;
+          padding: 2rem 0;
+          font-size: $f-sm;
+          color: $c-darkgrey;
+          text-align: center;
+        }
       }
     }
   }
@@ -74,10 +90,41 @@
       padding: 0;
 
       &__contributors {
-        margin-bottom: 2rem;
+        &__names {
+          > * {
+            padding: 1rem 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: $screen-tablet) {
+  .team-content {
+    margin-top: 2rem;
+
+    &__item {
+      grid-column: span 2;
+      padding: 0;
+
+      &__logos {
+        flex-direction: column;
 
         > * {
-          padding: 1rem 0;
+          width: 100%;
+        }
+
+        > * + * {
+          margin: 1rem 0;
+        }
+      }
+
+      &__contributors {
+        &__names {
+          > * {
+            width: 100%;
+          }
         }
       }
     }
