@@ -46,7 +46,7 @@
 
     .member-list {
       > * {
-        padding: 1rem 0;
+        padding: 0.5rem 0;
         font-size: $f-sm;
         color: $c-darkgrey;
         text-align: center;
@@ -71,7 +71,7 @@
 
         > * {
           width: 50%;
-          padding: 2rem 0;
+          padding: 0.5rem 0;
           font-size: $f-sm;
           color: $c-darkgrey;
           text-align: center;
@@ -81,6 +81,11 @@
   }
 }
 
+.proto {
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+}
+
 @media screen and (max-width: $screen-md) {
   .team-content {
     margin-top: 2rem;
@@ -88,15 +93,12 @@
     &__item {
       grid-column: span 2;
       padding: 0;
-
-      &__contributors {
-        &__names {
-          > * {
-            padding: 1rem 0;
-          }
-        }
-      }
     }
+  }
+
+  .proto {
+    margin-top: initial;
+    margin-bottom: initial;
   }
 }
 
