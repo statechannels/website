@@ -31,6 +31,8 @@
 
   &__right {
     @include f-rem;
+    display: flex;
+    align-items: center;
     max-width: 28rem;
     margin: 0 0 0 1rem;
     color: $c-black;
@@ -61,36 +63,14 @@
       }
     }
 
-    &__bottom {
-      display: flex;
-      align-items: center;
+    .twitter {
+      display: inline-block;
+      position: relative;
+      top: 0.25rem;
+      margin-left: 1rem;
 
-      > a > svg {
+      > svg {
         width: 2.25rem;
-      }
-
-      > * + * {
-        position: relative;
-        display: inline-block;
-        margin-left: 0.5rem;
-        padding-bottom: 0.5rem;
-
-        &::before {
-          position: absolute;
-          left: 50%;
-          transform: translateX(-50%);
-          bottom: 0.5rem;
-          width: 100%;
-          height: 1px;
-          background-color: $c-blue;
-          opacity: 0;
-          transition: opacity $transition-speed;
-          content: '';
-        }
-
-        &:hover::before {
-          opacity: 1;
-        }
       }
     }
   }
@@ -124,8 +104,8 @@
       text-align: center;
       margin-left: 0;
 
-      &__bottom {
-        flex-direction: column;
+      .twitter {
+        margin-left: 0;
       }
     }
   }
