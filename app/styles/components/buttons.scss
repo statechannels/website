@@ -13,6 +13,7 @@
   &--stroke {
     border: 1px solid $c-blue;
     color: $c-blue;
+    background: $c-white;
     transition: color $transition-speed, background-color $transition-speed;
 
     &:hover {
