@@ -31,6 +31,14 @@
       @include f-heading;
       margin: 0 0 1.82rem;
     }
+
+    &__buttons {
+      display: flex;
+
+      > * + * {
+        margin-left: 1rem;
+      }
+    }
   }
 }
 
@@ -49,6 +57,16 @@
     bottom: initial;
     opacity: 0.25;
     max-height: 40%;
+  }
+}
+
+@media screen and (max-width: $screen-mobile) {
+  .callout__content {
+    &__buttons {
+      > * {
+        width: 50%;
+      }
+    }
   }
 }
 
