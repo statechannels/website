@@ -4,6 +4,7 @@ $c-white: #fff;
 $c-blue: #2f80ed;
 $c-darkgrey: #707070;
 $c-lightgrey: #e6e6e6;
+$c-editor-bg: #f7f9fa;
 
 
 // Font Sizes
@@ -11,6 +12,7 @@ $f-rem: 16px;
 $f-xs: 0.875rem;
 $f-sm: 1.125rem;
 $f-base: 1.25rem;
+$f-small-heading: 1.25rem;
 $f-subheading: 1.625rem;
 $f-heading: 2.5rem;
 
@@ -48,6 +50,8 @@ $transition-speed: 200ms;
 @import 'pages/technology';
 @import 'pages/team';
 @import 'pages/statechannels';
+
+@import 'markdown';
 
 @import 'helpers';
 
