@@ -19,20 +19,20 @@ For developers, Counterfactual disentangles the UI of the dapp from the formal l
 
 ### For Users
 
-Users install the Counterfactual Metamask plugin, which creates an Ethereum address in Metamask for their Counterfactual dapp funds. Funds in this account are used to fund the individual (virtual) channels that players choose to open in a specific Counterfactual app.
+Users install the Counterfactual Metamask plugin, which creates an Ethereum account in Metamask managed by the Counterfactual Node. Funds in this account are used to fund the individual (virtual) channels that players choose to open in any specific Counterfactual app.
 
 ### For Developers
 
-The logic of the game, things like
+The backend logic of the game for the game is implemented by pure functions in the solidity contract, **HighRoller.sol**. Functionality handled includes:
 
 1. whose turn is it now?
 2. how does a player action modify game state?
 3. when is the game over?
 4. what happens when the game is over?
 
-are implemented by pure functions in **HighRoller.sol**. The solidity contract has already been written, and can be found [here](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol).
+The contract has already been written, and can be found [here](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol).
 
-The UI for the game, including things like
+The UI and client logic for the game is implemented in **HighRoller.js** Functionality handled includes:
 
 1. proposing a game to another user
 2. accepting a proposal from another user
@@ -40,24 +40,24 @@ The UI for the game, including things like
 4. listening for other players to take their turns
 5. leaving a game when it’s over
 
-are implemented in **HighRoller.js**
+You will create this file and all the functionality by following this guide.
 
 Counterfactual nodes implement the interactions between these two components
 
-dapp UI ( HighRoller.js ) < -- 1 -- > Counterfactual (Node) < -- 2 -- > GameLogic (HighRoller.sol)
+dapp UI ( HighRoller.js ) < -- 1 -- > Counterfactual Node < -- 2 -- > GameLogic (HighRoller.sol)
 
 in three ways:
 
-1. **S****tarting a channel** - When users request / agree to play a game, the UI passes the request (via connection 1) to the Counterfactual node. The node then instantiates a state channel based on the game logic described by the contract (connection 2).
-2. **S****tate management in a channel** - In an open channel, requests to modify state are passed to the CF node (via connection 1). The node uses the pure functions of the solidity contract (via connection 2) to verify that requests to modify state are valid, and to alter the state accordingly. The node makes updated state available to members of the channel (via connection 1).
-3. **E****nding a game**  - When the game is over, the dapp (HighRoller.js) must request (via 1) that the node end the game. In turn, the CF node will (via 2) verify that the game is over, and if it is over, have the contract implement the transactions that resolve the game.
+1. **S****tarting a channel** - When users request / agree to play a game, the UI passes the request (via connection 1) to the Counterfactual node. The node then instantiates a state channel based on the game logic described by the contract (connection 2). Any staked funds the state channel requires are drawn from the Counterfactual wallet inside metamask.
+2. **S****tate management in a channel** - In an open channel, requests to modify state are passed to the CF node (via connection 1). The node calls the pure functions of the solidity contract (via connection 2) to verify that requests to modify state are valid, and to alter the state accordingly. The node makes updated state available to members of the channel (via connection 1).
+3. **E****nding a game**  - When the game is over, the dapp (HighRoller.js) must request (via connection 1) that the node end the game. In turn, the CF node will (via connection 2) verify that the game is over, and if it is over, have the contract implement the transactions that resolve the game.
 
 
 ### In this Getting Start Guide, you’ll learn how to:
 
 1. Instantiate a Counterfactual NodeProvider
 2. Connect the NodeProvider to a blockchain contract through an AppFactory instance
-3. Use the AppFactory’s `.proposeInstallVirtual()` method to propose a virtual state channel based on the AppFactory instance’s blockchain contract and settings
+3. Use the AppFactory’s `.proposeInstallVirtual()` method to propose a new virtual state channel based on the AppFactory instance’s settings (including stakes and game logic)
 4. Use the NodeProvider’s `.on()`  method to listen for accepted installs and updated state in the channel
 5. Use the AppInstance’s `.takeAction()` method to propose updates to state in the channel
 6. Use the AppInstance’s `.uninstall()` method to propose closing and resolving the channel
