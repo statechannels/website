@@ -53,7 +53,7 @@ in three ways:
 3. **E****nding a game**  - When the game is over, the dapp (HighRoller.js) must request (via 1) that the node end the game. In turn, the CF node will (via 2) verify that the game is over, and if it is over, have the contract implement the transactions that resolve the game.
 
 
-### In this Getting Start Guide, you’ll learn how to**:
+### In this Getting Start Guide, you’ll learn how to:
 
 1. Instantiate a Counterfactual NodeProvider
 2. Connect the NodeProvider to a blockchain contract through an AppFactory instance
@@ -72,14 +72,14 @@ in three ways:
 
 We’ll start our new Counterfactual project with the template in the Counterfactual truffle box. Looking through the template, you’ll find:
 
-- some initialized variables ( `let web3Provider, nodeProvider;` )
-- the async function `run()` which contains calls to
-    - initWeb3() // initializes web3; already complete and explained inline
-    - initContract() // **this is where we point to the blockchain contract for our state channel** - we’ll explain and fill in the details during the guide
-    - setupCF() // setup for the Counterfactual NodeProvider; already complete
-    - install() // **this is the game** - we’ll explain and fill this in
-        - The install function will call the rest of the functions in the doc
-- a call to the `run()` function
+* some initialized variables ( `let web3Provider, nodeProvider;` )
+* the async function `run()` which contains calls to
+    * initWeb3() // initializes web3; already complete and explained inline
+    * initContract() // **this is where we point to the blockchain contract for our state channel** - we’ll explain and fill in the details during the guide
+    * setupCF() // setup for the Counterfactual NodeProvider; already complete
+    * install() // **this is the game** - we’ll explain and fill this in
+        * The install function will call the rest of the functions in the doc
+* a call to the `run()` function
 
 
 
@@ -188,13 +188,12 @@ We set up a Counterfactual NodeProvider.
 This is where we begin coding the game.
 
 The install function will
-
 - reset game state
 - instantiate a new cfProvider
 - instantiate an appFactory instance of our HighRoller contract. To do this,  we’ll need
-        - the address of our contract (good thing we set it up!)
-        - the encodings for the game (we don’t quite know these until we figure out more about the game, so we’ll have to wait until later to fill this in)
-        - and the cfProvider
+      - the address of our contract (good thing we set it up!)
+      - the encodings for the game (we don’t quite know these until we figure out more about the game, so we’ll have to wait until later to fill this in)
+      - and the cfProvider
 
 
     async function install() {
@@ -209,11 +208,7 @@ The install function will
 
 We’ll define the function `resetGameState()` once we have a better sense of what that will entail.
 
-The install() function will also call `proposeInstall(appFactory)`. This function will implement
-
-             `appFactory.proposeInstallVirtual()`
-
-method; it asks the Counterfactual node to instantiate a (virtual) state channel based on the blockchain contract specified in `appFactory`. To call this method, we’ll need to specify
+The install() function will also call `proposeInstall(appFactory)`. This function will implement `appFactory.proposeInstallVirtual()` method; it asks the Counterfactual node to instantiate a (virtual) state channel based on the blockchain contract specified in `appFactory`. To call this method, we’ll need to specify
 
 - the initial state for the game (we’ll have to fill this in after we look at the High Roller contract)
 - who is playing
@@ -221,37 +216,37 @@ method; it asks the Counterfactual node to instantiate a (virtual) state channel
 - how long before timeout
 - the intermediary
 
+```
+async function install() {
+  resetGameState();
 
-    async function install() {
-      resetGameState();
+  let cfProvider = new cf.Provider(nodeProvider);
+  let appFactory = new cf.AppFactory(contractAddress, {
+    actionEncoding: " ",
+    stateEncoding: " "
+  }, cfProvider);
 
-      let cfProvider = new cf.Provider(nodeProvider);
-      let appFactory = new cf.AppFactory(contractAddress, {
-        actionEncoding: " ",
-        stateEncoding: " "
-      }, cfProvider);
+  proposeInstall(appFactory);
+}
 
-      proposeInstall(appFactory);
-    }
+async function proposeInstall(appFactory) {
+  const { intermediary, nodeAddress } = await getOpponentData();
+  const depositAmount = '0.00001';
+  const initialState = {};
 
-    async function proposeInstall(appFactory) {
-      const { intermediary, nodeAddress } = await getOpponentData();
-      const depositAmount = '0.00001';
-      const initialState = {};
-
-      await appFactory.proposeInstallVirtual({
-        initialState,
-        proposedToIdentifier: nodeAddress,
-        asset: {
-          assetType: 0 /* AssetType.ETH */
-        },
-        peerDeposit: parseEther(depositAmount),
-        myDeposit: parseEther(depositAmount),
-        timeout: 172800,
-        intermediaries: [intermediary]
-      });
-    }
-
+  await appFactory.proposeInstallVirtual({
+    initialState,
+    proposedToIdentifier: nodeAddress,
+    asset: {
+      assetType: 0 /* AssetType.ETH */
+    },
+    peerDeposit: parseEther(depositAmount),
+    myDeposit: parseEther(depositAmount),
+    timeout: 172800,
+    intermediaries: [intermediary]
+  });
+}
+```
 
 
 The install() function is also where we instruct the cfProvider to **listen** in the channel for
@@ -531,6 +526,7 @@ and a game reset:
         }
       };
     }
+
 ----------
 
 
