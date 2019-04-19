@@ -26,6 +26,14 @@
   }
 }
 
+@mixin f-small-heading {
+  font-size: $f-small-heading;
+
+  @media screen and (max-width: $screen-mobile) {
+    font-size: $f-small-heading * 0.75;
+  }
+}
+
 @mixin f-subheading {
   font-size: $f-subheading;
 
