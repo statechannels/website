@@ -17,10 +17,11 @@
   "dependencies": {
     "bodymovin": "^4.13.0",
     "font-awesome": "^4.6.3",
+    "lottie-web": "^5.3.4",
     "normalize-css": "^2.3.1",
+    "showdown": "^1.9.0",
     "whatwg-fetch": "^2.0.2",
-    "yoga-sass": "^1.0.1",
-    "lottie-web": "^5.3.4"
+    "yoga-sass": "^1.0.1"
   },
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.23.0",

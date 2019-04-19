@@ -20,13 +20,18 @@
   ol,
   ul {
     @include f-base;
-    margin-top: 0.25rem;
-    color: $c-darkgrey;
+    color: $c-black;
     font-weight: 300;
 
     li {
       padding: 0.5rem 0;
     }
+  }
+
+  ul {
+    margin-left: 16px;
+    padding-left: 16px;
+    list-style: initial;
   }
 
   strong {
@@ -42,8 +47,16 @@
     word-wrap: break-word;
   }
 
+  code {
+    padding: 0.25rem;
+    border-radius: 3px;
+    background: $c-editor-bg;
+    line-height: 1.5;
+  }
+
   hr {
     margin: 3rem 0;
     border: 0.5px solid $c-lightgrey;
   }
+
 }
