@@ -90,7 +90,7 @@
           <div id="markdown">
 <h1 id="counterfactualgettingstartedguide">Counterfactual Getting Started Guide</h1>
 <h2 id="introduction">Introduction</h2>
-<p>Counterfactual is a development framework that makes it easy to build dapps on Ethereum using generalized state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and gas-cheap, while still retaining the security of an on-chain application. [ https://www.counterfactual.com/statechannels/ ]</p>
+<p>Counterfactual is a development framework that makes it easy to build dapps on Ethereum using generalized state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and gas-cheap, while still retaining the security of an on-chain application. <a href="https://www.counterfactual.com/statechannels/">https://www.counterfactual.com/statechannels/</a></p>
 <p>State channels are particularly useful for any dapp that manages turn-based conditional transactions between a fixed set of users. For instance, a dapp where users play a game against each other for money.</p>
 <p>In this guide, we’ll build a simple game dapp using the Counterfactual framework. The game is called High Roller: a dice game where two users stake ETH, then roll two dice, with the higher roll taking all of the staked money.</p>
 <p>To streamline the guide, we’ve built a bot to automatically accept requests to play High Roller; this means you only have to code the UI for the first player (the one who proposes to play the game).</p>
@@ -132,7 +132,7 @@
 <li>Use the AppFactory’s <code>.proposeInstallVirtual()</code> method to propose a virtual state channel based on the AppFactory instance’s blockchain contract and settings</li>
 <li>Use the NodeProvider’s <code>.on()</code>  method to listen for accepted installs and updated state in the channel</li>
 <li>Use the AppInstance’s <code>.takeAction()</code> method to propose updates to state in the channel</li>
-<li>Use the AppInstance’s <code>.unin``s``tall()</code> method to propose closing and resolving the channel</li>
+<li>Use the AppInstance’s <code>.uninstall()</code> method to propose closing and resolving the channel</li>
 </ol>
 <hr />
 <h1 id="highrollerjs">HighRoller.js</h1>

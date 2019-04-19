@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Counterfactual is a development framework that makes it easy to build dapps on Ethereum using generalized state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and gas-cheap, while still retaining the security of an on-chain application. [ https://www.counterfactual.com/statechannels/ ]
+Counterfactual is a development framework that makes it easy to build dapps on Ethereum using generalized state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and gas-cheap, while still retaining the security of an on-chain application. [https://www.counterfactual.com/statechannels/](https://www.counterfactual.com/statechannels/)
 
 State channels are particularly useful for any dapp that manages turn-based conditional transactions between a fixed set of users. For instance, a dapp where users play a game against each other for money.
 
@@ -60,7 +60,7 @@ in three ways:
 3. Use the AppFactory’s `.proposeInstallVirtual()` method to propose a virtual state channel based on the AppFactory instance’s blockchain contract and settings
 4. Use the NodeProvider’s `.on()`  method to listen for accepted installs and updated state in the channel
 5. Use the AppInstance’s `.takeAction()` method to propose updates to state in the channel
-6. Use the AppInstance’s `.unin``s``tall()` method to propose closing and resolving the channel
+6. Use the AppInstance’s `.uninstall()` method to propose closing and resolving the channel
 
 
 

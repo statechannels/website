@@ -1,5 +1,4 @@
 #markdown {
-
   h1 {
     @include f-heading;
   }
@@ -18,30 +17,44 @@
     margin-bottom: 0;
   }
 
-  p,
-  ol,
   ul {
-    @include f-base;
-    color: $c-black;
-    font-weight: 300;
-
-    li {
-      padding: 0.5rem 0;
-
-      p {
-        margin: 0;
-      }
-    }
-  }
-
-  ul {
+    margin-top: 0;
     margin-left: 16px;
     padding-left: 16px;
     list-style: initial;
   }
 
+  p,
+  ol,
+  ul {
+    @include f-base;
+    color: $c-darkgrey;
+    font-weight: 300;
+
+    li {
+      padding: 0;
+
+      p {
+        margin: 0;
+      }
+
+      ul {
+        margin: 1rem 0 0;
+
+        > * + * {
+          margin-top: 1rem;
+        }
+      }
+    }
+
+    > * + * {
+      margin-top: 0.75rem;
+    }
+  }
+
   strong {
     color: $c-black;
+    font-weight: 400;
   }
 
   pre {
@@ -65,4 +78,9 @@
     border: 0.5px solid $c-lightgrey;
   }
 
+  a {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
