@@ -19,20 +19,20 @@ For developers, Counterfactual disentangles the UI of the dapp from the formal l
 
 ### For Users
 
-Users install the Counterfactual Metamask plugin, which creates an Ethereum address in Metamask for their Counterfactual dapp funds. Funds in this account are used to fund the individual (virtual) channels that players choose to open in a specific Counterfactual app.
+Users install the Counterfactual Metamask plugin, which creates an Ethereum account in Metamask managed by the Counterfactual Node. Funds in this account are used to fund the individual (virtual) channels that players choose to open in any specific Counterfactual app.
 
 ### For Developers
 
-The logic of the game, things like
+The backend logic of the game for the game is implemented by pure functions in the solidity contract, **HighRoller.sol**. Functionality handled includes:
 
 1. whose turn is it now?
 2. how does a player action modify game state?
 3. when is the game over?
 4. what happens when the game is over?
 
-are implemented by pure functions in **HighRoller.sol**. The solidity contract has already been written, and can be found [here](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol).
+The contract has already been written, and can be found [here](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol).
 
-The UI for the game, including things like
+The UI and client logic for the game is implemented in **HighRoller.js** Functionality handled includes:
 
 1. proposing a game to another user
 2. accepting a proposal from another user
@@ -40,24 +40,24 @@ The UI for the game, including things like
 4. listening for other players to take their turns
 5. leaving a game when it’s over
 
-are implemented in **HighRoller.js**
+You will create this file and all the functionality by following this guide.
 
 Counterfactual nodes implement the interactions between these two components
 
-dapp UI ( HighRoller.js ) < -- 1 -- > Counterfactual (Node) < -- 2 -- > GameLogic (HighRoller.sol)
+dapp UI ( HighRoller.js ) < -- 1 -- > Counterfactual Node < -- 2 -- > GameLogic (HighRoller.sol)
 
 in three ways:
 
-1. **S****tarting a channel** - When users request / agree to play a game, the UI passes the request (via connection 1) to the Counterfactual node. The node then instantiates a state channel based on the game logic described by the contract (connection 2).
-2. **S****tate management in a channel** - In an open channel, requests to modify state are passed to the CF node (via connection 1). The node uses the pure functions of the solidity contract (via connection 2) to verify that requests to modify state are valid, and to alter the state accordingly. The node makes updated state available to members of the channel (via connection 1).
-3. **E****nding a game**  - When the game is over, the dapp (HighRoller.js) must request (via 1) that the node end the game. In turn, the CF node will (via 2) verify that the game is over, and if it is over, have the contract implement the transactions that resolve the game.
+1. **S****tarting a channel** - When users request / agree to play a game, the UI passes the request (via connection 1) to the Counterfactual node. The node then instantiates a state channel based on the game logic described by the contract (connection 2). Any staked funds the state channel requires are drawn from the Counterfactual wallet inside metamask.
+2. **S****tate management in a channel** - In an open channel, requests to modify state are passed to the CF node (via connection 1). The node calls the pure functions of the solidity contract (via connection 2) to verify that requests to modify state are valid, and to alter the state accordingly. The node makes updated state available to members of the channel (via connection 1).
+3. **E****nding a game**  - When the game is over, the dapp (HighRoller.js) must request (via connection 1) that the node end the game. In turn, the CF node will (via connection 2) verify that the game is over, and if it is over, have the contract implement the transactions that resolve the game.
 
 
 ### In this Getting Start Guide, you’ll learn how to:
 
 1. Instantiate a Counterfactual NodeProvider
 2. Connect the NodeProvider to a blockchain contract through an AppFactory instance
-3. Use the AppFactory’s `.proposeInstallVirtual()` method to propose a virtual state channel based on the AppFactory instance’s blockchain contract and settings
+3. Use the AppFactory’s `.proposeInstallVirtual()` method to propose a new virtual state channel based on the AppFactory instance’s settings (including stakes and game logic)
 4. Use the NodeProvider’s `.on()`  method to listen for accepted installs and updated state in the channel
 5. Use the AppInstance’s `.takeAction()` method to propose updates to state in the channel
 6. Use the AppInstance’s `.uninstall()` method to propose closing and resolving the channel
@@ -70,7 +70,17 @@ in three ways:
 # HighRoller.js
 ## Truffle unbox
 
-We’ll start our new Counterfactual project with the template in the Counterfactual truffle box. Looking through the template, you’ll find:
+
+
+We’ll start our new Counterfactual project with the template in the Counterfactual Truffle box. After installing [Truffle](https://truffleframework.com/tutorials/pet-shop), unbox the Counterfactual Truffle box:
+
+```
+mkdir my-project
+cd my-project
+truffle unbox counterfactual/truffle-box
+```
+
+Looking through the template, you’ll find:
 
 * some initialized variables ( `let web3Provider, nodeProvider;` )
 * the async function `run()` which contains calls to
@@ -87,13 +97,13 @@ We’ll start our new Counterfactual project with the template in the Counterfac
 ----------
 ## Constants
 
-We’ll import some ethereum constants and utilities we’ll need to write High Roller:
+We’ll import some ethers.js [constants and utilities](https://docs.ethers.io/ethers.js/html/api-utils.html) we’ll need to write High Roller:
 
-- HashZero (the ethers.js bytes32 representation of zero)
-- bigNumberify (returns Big Number types from input; we’ll use these because JavaScript is, by default, not able to handle big number representations accurately)
-- parseEther (converts the string representation of Ether into BigNumber instance of the amount of Wei)
-- solidityKeccak256 (solidity hash function)
-- fromExtendedKey (creates an ethereum wallet-like object [HDNode] from an extended private or public key)
+* HashZero // the ethers.js bytes32 representation of zero)
+* bigNumberify // returns Big Number types from input; we’ll use these because JavaScript is, by default, not able to handle big number representations accurately
+* parseEther // converts the string representation of Ether into BigNumber instance of the amount of Wei
+* solidityKeccak256 // solidity hash function
+* fromExtendedKey // creates an ethereum wallet-like object, [HDNode](https://docs.ethers.io/ethers.js/html/api-advanced.html) from an extended private or public key
 
 
 ```
@@ -119,6 +129,7 @@ async function run() {
 
 ----------
 ## initWeb3()
+
 
 
     async function initWeb3() {
@@ -151,7 +162,7 @@ async function run() {
 
 ## initContract()
 
-This is where we point our HighRoller app to the corresponding HighRoller contract on the ethereum blockchain.
+This is where we point our HighRoller app to the corresponding HighRoller solidity contract.
 
 
     async function initContract() {
@@ -188,14 +199,15 @@ We set up a Counterfactual NodeProvider.
 This is where we begin coding the game.
 
 The install function will
-- reset game state
-- instantiate a new cfProvider
-- instantiate an appFactory instance of our HighRoller contract. To do this,  we’ll need
-      - the address of our contract (good thing we set it up!)
-      - the encodings for the game (we don’t quite know these until we figure out more about the game, so we’ll have to wait until later to fill this in)
-      - and the cfProvider
+* reset game state
+* instantiate a new cfProvider
+* instantiate an appFactory instance of our HighRoller contract. To do this,  we’ll need
+  * the address of our contract, which we've already set up
+  * the encodings for the game, which we haven't thought about yet
+  * and the cfProvider
 
 
+```
     async function install() {
       resetGameState();
 
@@ -205,16 +217,17 @@ The install function will
         stateEncoding: " "
       }, cfProvider);
     }
+```
 
 We’ll define the function `resetGameState()` once we have a better sense of what that will entail.
 
-The install() function will also call `proposeInstall(appFactory)`. This function will implement `appFactory.proposeInstallVirtual()` method; it asks the Counterfactual node to instantiate a (virtual) state channel based on the blockchain contract specified in `appFactory`. To call this method, we’ll need to specify
+The install() function will also call `proposeInstall(appFactory)`. This function will implement the appFactory's `proposeInstallVirtual()` method; it asks the Counterfactual node to instantiate a (virtual) state channel based on the blockchain contract specified in `appFactory`. To call this method, we’ll need to specify
 
-- the initial state for the game (we’ll have to fill this in after we look at the High Roller contract)
-- who is playing
-- what are the stakes (and in what currency)
-- how long before timeout
-- the intermediary
+* the initial state for the game (we’ll have to fill this in after we look at the High Roller contract)
+* who is playing
+* what are the stakes (and in what currency)
+* how long before timeout
+* the intermediary
 
 ```
 async function install() {
@@ -257,7 +270,7 @@ The install() function is also where we instruct the cfProvider to **listen** in
 and to react to those changes via the method  `.on(listenFor, respondWith() )`.
 
 
-
+```
     async function install() {
       resetGameState();
 
@@ -272,6 +285,7 @@ and to react to those changes via the method  `.on(listenFor, respondWith() )`.
       cfProvider.on('installVirtual', onInstallEvent);
       cfProvider.on('updateState', onUpdateEvent);
     }
+```
 
 When cfProvider detects ‘installVirtual’ is successful (when the bot accepts our proposeInstallVirtual) it calls the function **onInstallEvent().** When it detects updates in state in the virtualChannel, it calls **onUpdateEvent().**  This is the in-channel state management mechanism for Interface 1.
 
@@ -284,13 +298,32 @@ When cfProvider detects ‘installVirtual’ is successful (when the bot accepts
 
 When the cfProvider confirms our proposed install has been accepted, we reveal the “Roll the dice” button for our player to use.
 
-
+```
     async function onInstallEvent(event) {
       currentGame.appInstance = event.data.appInstance;
 
       revealButton();
     }
+```
 
+We'll also jump back up to `run()` and call `bindEvents()`
+
+```
+async function run() {
+  await initWeb3();
+  await initContract();
+  await setupCF();
+  await install();
+}
+```
+
+and implement it
+
+```
+function bindEvents() {
+  document.querySelector('#rollBtn').addEventListener("click", roll);
+}
+```
 
 Now we’ll take a quick look at the blockchain contract to see how the game logic is structured.
 
