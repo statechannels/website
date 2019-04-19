@@ -306,6 +306,25 @@ When the cfProvider confirms our proposed install has been accepted, we reveal t
     }
 ```
 
+We'll also jump back up to `run()` and call `bindEvents()`
+
+```
+async function run() {
+  await initWeb3();
+  await initContract();
+  await setupCF();
+  await install();
+}
+```
+
+and implement it
+
+```
+function bindEvents() {
+  document.querySelector('#rollBtn').addEventListener("click", roll);
+}
+```
+
 Now we’ll take a quick look at the blockchain contract to see how the game logic is structured.
 
 
