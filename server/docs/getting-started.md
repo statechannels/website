@@ -174,7 +174,7 @@ async function initContract() {
 
 We set up a Counterfactual NodeProvider.
 
-```
+```typescript
 async function setupCF() {
   nodeProvider = new cf.NodeProvider();
   await nodeProvider.connect();
@@ -430,7 +430,7 @@ function applyAction(AppState memory state, Action memory action)
     nextState.playerSecondNumber = action.number;
   } else if (action.actionType == ActionType.REVEAL) {
     require(
-    state.stage == Stage.REVEALING
+    state.stage == Stage.REVEALING,
     "Cannot apply REVEALING on REVEALING"
     );
     nextState.stage = Stage.DONE;
