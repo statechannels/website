@@ -608,6 +608,7 @@ async function roll() {
       actionType: HighRollerAction.START_GAME,
       actionHash: HashZero
     });
+  }
 }
 ```
 
