@@ -513,7 +513,7 @@ async function proposeInstall(appFactory) {
       commitHash: HashZero,
       playerFirstNumber: 0,
       playerSecondNumber: 0
-    },
+    };
 
   await appFactory.proposeInstallVirtual({
   initialState,
