@@ -750,6 +750,31 @@ async function executeContract(
 }
 ```
 
+The function `getDieNumbers()` will present the user with (manufactured) dice rolls that add up to their total score.
+
+```typescript
+
+function getDieNumbers(totalSum) {
+  // Choose result for each die.
+  if (totalSum === 12) {
+    return [6, 6];
+  }
+
+  if (totalSum > 2 && totalSum < 12) {
+    return [Math.floor(totalSum / 2), Math.ceil(totalSum / 2)];
+  }
+
+  if (totalSum > 2 && totalSum % 2 === 0) {
+    return [Math.floor(totalSum / 2) - 1, Math.ceil(totalSum / 2) + 1];
+  }
+
+  return [totalSum / 2, totalSum / 2];
+}
+
+```
+
+Question: Is there a way to extract the values of each die that the contract generates rather than extracting the summed totals of the values and making up the individual die values? Why or why not?
+
 ----------
 
 The rest is good old UI for the game.
