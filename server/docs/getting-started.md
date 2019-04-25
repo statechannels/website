@@ -174,8 +174,7 @@ async function initContract() {
 
 We set up a Counterfactual NodeProvider.
 
-```solidity
-// COUNTERFACTUAL
+```
 async function setupCF() {
   nodeProvider = new cf.NodeProvider();
   await nodeProvider.connect();
@@ -300,6 +299,8 @@ We'll also jump back up to `run()` and call `bindEvents()`
 
 ```typescript
 async function run() {
+  
+  bindEvents();
   await initWeb3();
   await initContract();
   await setupCF();
@@ -492,7 +493,7 @@ async function install() {
 }
 ```
 
-We can also describe the initiateState:
+We can also describe the initialState:
 
 ```typescript
 async function proposeInstall(appFactory) {
@@ -539,8 +540,17 @@ function resetGameState() {
   currentGame = {
     highRollerState: {
       stage: HighRollerStage.PRE_GAME
-    }
+    },
+    salt: generateSalt()
   };
+}
+```
+
+where the `generateSalt()` function looks like
+
+```
+function generateSalt() {
+  return ethers.utils.bigNumberify(ethers.utils.randomBytes(32)).toHexString();
 }
 ```
 
