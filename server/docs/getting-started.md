@@ -2,11 +2,11 @@
 
 ## Introduction
 
-Counterfactual is a development framework that makes it easy to build dapps on Ethereum using generalized state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and gas-cheap, while still retaining the security of an on-chain application. [https://www.counterfactual.com/statechannels/](https://www.counterfactual.com/statechannels/)
+Counterfactual is a development framework that makes it easy to build dapps on Ethereum that take advanatge of state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and fee-less, while still retaining the security of an on-chain application.
 
-State channels are particularly useful for any dapp that manages turn-based conditional transactions between a fixed set of users. For instance, a dapp where users play a game against each other for money.
+State channels are particularly useful for any dapp that relies on turn-based state updates between a fixed set of users that conditionally execute a transaction based on that state. For instance, a board game dapp where users take turns making moves on the board until a winner emerges and is rewarded with some money.
 
-In this guide, we’ll build a simple game dapp using the Counterfactual framework. The game is called High Roller: a dice game where two users stake ETH, then roll two dice, with the higher roll taking all of the staked money.
+In this guide, we’ll build a simple game using the Counterfactual framework. The game is called High Roller: a dice game where two users stake ETH, roll two dice, and the one with the higher roll wins all of the staked money.
 
 To streamline the guide, we’ve built a bot to automatically accept requests to play High Roller; this means you only have to code the UI for the first player (the one who proposes to play the game).
 
@@ -19,20 +19,20 @@ For developers, Counterfactual disentangles the UI of the dapp from the formal l
 
 ### For Users
 
-Users install the Counterfactual Metamask plugin, which creates an Ethereum account in Metamask managed by the Counterfactual Node. Funds in this account are used to fund the individual (virtual) channels that players choose to open in any specific Counterfactual app.
+Users install the Counterfactual Metamask plugin, which creates an Ethereum account in Metamask managed by the Counterfactual Node. Funds in this account are used to fund the individual channels that players choose to open in any specific Counterfactual app.
 
 ### For Developers
 
-The backend logic of the game for the game is implemented by pure functions in the solidity contract, **HighRoller.sol**. Functionality handled includes:
+The backend logic for the game is implemented by pure functions in the Solidity contract, **HighRoller.sol**. Functionality handled includes answering the following questions:
 
 1. whose turn is it now?
-2. how does a player action modify game state?
+2. what are the possible actions / moves a user can legally execute?
 3. when is the game over?
-4. what happens when the game is over?
+4. what happens to the stake when the game is over?
 
 The contract has already been written, and can be found [here](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol).
 
-The UI and client logic for the game is implemented in **HighRoller.js** Functionality handled includes:
+The UI and client logic for the game is implemented in **HighRoller.js**. Functionality handled includes:
 
 1. proposing a game to another user
 2. accepting a proposal from another user
@@ -48,9 +48,11 @@ dapp UI ( HighRoller.js ) < -- 1 -- > Counterfactual Node < -- 2 -- > GameLogic 
 
 in three ways:
 
-1. **S****tarting a channel** - When users request / agree to play a game, the UI passes the request (via connection 1) to the Counterfactual node. The node then instantiates a state channel based on the game logic described by the contract (connection 2). Any staked funds the state channel requires are drawn from the Counterfactual wallet inside metamask.
-2. **S****tate management in a channel** - In an open channel, requests to modify state are passed to the CF node (via connection 1). The node calls the pure functions of the solidity contract (via connection 2) to verify that requests to modify state are valid, and to alter the state accordingly. The node makes updated state available to members of the channel (via connection 1).
-3. **E****nding a game**  - When the game is over, the dapp (HighRoller.js) must request (via connection 1) that the node end the game. In turn, the CF node will (via connection 2) verify that the game is over, and if it is over, have the contract implement the transactions that resolve the game.
+1. **Starting a channel** - When users request / agree to play a game, the UI passes the request (via connection 1) to the Counterfactual node. The node then instantiates a state channel based on the game logic described by the contract (connection 2). Any staked funds the state channel requires are drawn from the Counterfactual wallet inside metamask.
+
+2. **State management in a channel** - In an open channel, requests to modify state are passed to the CF node (via connection 1). The node calls the pure functions of the solidity contract (via connection 2) to verify that requests to modify state are valid, and to alter the state accordingly. The node makes updated state available to members of the channel (via connection 1).
+
+3. **Ending a game**  - When the game is over, the dapp (HighRoller.js) must request (via connection 1) that the node end the game. In turn, the CF node will (via connection 2) verify that the game is over, and if it is over, have the contract implement the transactions that resolve the game.
 
 
 ### In this Getting Start Guide, you’ll learn how to:
@@ -62,19 +64,16 @@ in three ways:
 5. Use the AppInstance’s `.takeAction()` method to propose updates to state in the channel
 6. Use the AppInstance’s `.uninstall()` method to propose closing and resolving the channel
 
-
-
-
-
 ----------
-# HighRoller.js
-## Truffle unbox
 
+# HighRoller.js
+
+## Truffle unbox
 
 
 We’ll start our new Counterfactual project with the template in the Counterfactual Truffle box. After installing [Truffle](https://truffleframework.com/tutorials/pet-shop), unbox the Counterfactual Truffle box:
 
-```
+```bash
 mkdir my-project
 cd my-project
 truffle unbox counterfactual/truffle-box
@@ -91,30 +90,26 @@ Looking through the template, you’ll find:
         * The install function will call the rest of the functions in the doc
 * a call to the `run()` function
 
-
-
-
 ----------
+
 ## Constants
 
-We’ll import some ethers.js [constants and utilities](https://docs.ethers.io/ethers.js/html/api-utils.html) we’ll need to write High Roller:
+We’ll import some [ethers.js](https://docs.ethers.io/ethers.js) [constants and utilities](https://docs.ethers.io/ethers.js/html/api-utils.html) we’ll need to write High Roller:
 
-* HashZero // the ethers.js bytes32 representation of zero)
+* HashZero // the ethers.js bytes32 representation of zero
 * bigNumberify // returns Big Number types from input; we’ll use these because JavaScript is, by default, not able to handle big number representations accurately
 * parseEther // converts the string representation of Ether into BigNumber instance of the amount of Wei
 * solidityKeccak256 // solidity hash function
 * fromExtendedKey // creates an ethereum wallet-like object, [HDNode](https://docs.ethers.io/ethers.js/html/api-advanced.html) from an extended private or public key
 
 
-```
+```typescript
 const { HashZero } = ethers.constants;
 const { bigNumberify, parseEther, solidityKeccak256 } = ethers.utils;
 const { fromExtendedKey } = ethers.utils.HDNode;
 
 const contractAddress = '0x91907355C59BA005843E791c88aAB80b779446c9';
-const numberSalt =
-"0xdfdaa4d168f0be935a1e1d12b555995bc5ea67bd33fce1bc5be0a1e0a381fc90";
-
+const numberSalt = "0xdfdaa4d168f0be935a1e1d12b555995bc5ea67bd33fce1bc5be0a1e0a381fc90";
 
 let web3Provider, nodeProvider;
 
@@ -128,68 +123,65 @@ async function run() {
 
 
 ----------
+
 ## initWeb3()
 
 
-
-    async function initWeb3() {
-      // Modern dapp browsers...
-      if (window.ethereum) {
-        web3Provider = window.ethereum;
-        try {
-          // Request account access
-          await window.ethereum.enable();
-        } catch (error) {
-          // User denied account access...
-          console.error("User denied account access")
-        }
-      }
-      // Legacy dapp browsers...
-      else if (window.web3) {
-        web3Provider = window.web3.currentProvider;
-      }
-      // If no injected web3 instance is detected, fall back to Ganache
-      else {
-        web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
-      }
-      web3 = new Web3(web3Provider);
+```typescript
+async function initWeb3() {
+  // Modern dapp browsers...
+  if (window.ethereum) {
+    web3Provider = window.ethereum;
+    try {
+      // Request account access
+      await window.ethereum.enable();
+    } catch (error) {
+      // User denied account access...
+      console.error("User denied account access")
     }
-
-
+  }
+  // Legacy dapp browsers...
+  else if (window.web3) {
+    web3Provider = window.web3.currentProvider;
+  }
+  // If no injected web3 instance is detected, fall back to Ganache
+  else {
+    web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
+  }
+  web3 = new Web3(web3Provider);
+}
+```
 
 ----------
-
 
 ## initContract()
 
 This is where we point our HighRoller app to the corresponding HighRoller solidity contract.
 
+```typescript
+async function initContract() {
+  let res = await fetch('HighRollerApp.json')
+  let HighRollerAppArtifact = await res.json();
+  let HighRollerApp = TruffleContract(HighRollerAppArtifact);
 
-    async function initContract() {
-      let res = await fetch('HighRollerApp.json')
-      let HighRollerAppArtifact = await res.json();
-      let HighRollerApp = TruffleContract(HighRollerAppArtifact);
-
-      // Set the provider for our contract
-      HighRollerApp.setProvider(web3Provider);
-    }
-
-
+  // Set the provider for our contract
+  HighRollerApp.setProvider(web3Provider);
+}
+```
 
 ----------
-
 
 ## setupCF()
 
 We set up a Counterfactual NodeProvider.
 
-
-    // COUNTERFACTUAL
-    async function setupCF() {
-      nodeProvider = new cf.NodeProvider();
-      await nodeProvider.connect();
-    }
-
+```solidity
+// COUNTERFACTUAL
+async function setupCF() {
+  nodeProvider = new cf.NodeProvider();
+  await nodeProvider.connect();
+}
+```
 
 ----------
 
@@ -207,16 +199,16 @@ The install function will
   * and the cfProvider
 
 
-```
-    async function install() {
-      resetGameState();
+```typescript
+async function install() {
+  resetGameState();
 
-      let cfProvider = new cf.Provider(nodeProvider);
-      let appFactory = new cf.AppFactory(contractAddress, {
-        actionEncoding: " ",
-        stateEncoding: " "
-      }, cfProvider);
-    }
+  let cfProvider = new cf.Provider(nodeProvider);
+  let appFactory = new cf.AppFactory(contractAddress, {
+    actionEncoding: " ",
+    stateEncoding: " "
+  }, cfProvider);
+}
 ```
 
 We’ll define the function `resetGameState()` once we have a better sense of what that will entail.
@@ -229,7 +221,7 @@ The install() function will also call `proposeInstall(appFactory)`. This functio
 * how long before timeout
 * the intermediary
 
-```
+```typescript
 async function install() {
   resetGameState();
 
@@ -270,7 +262,7 @@ The install() function is also where we instruct the cfProvider to **listen** in
 and to react to those changes via the method  `.on(listenFor, respondWith() )`.
 
 
-```
+```typescript
     async function install() {
       resetGameState();
 
@@ -293,22 +285,21 @@ When cfProvider detects ‘installVirtual’ is successful (when the bot accepts
 ----------
 
 
-
 ## onInstallEvent()
 
 When the cfProvider confirms our proposed install has been accepted, we reveal the “Roll the dice” button for our player to use.
 
-```
-    async function onInstallEvent(event) {
-      currentGame.appInstance = event.data.appInstance;
+```typescript
+async function onInstallEvent(event) {
+  currentGame.appInstance = event.data.appInstance;
 
-      revealButton();
-    }
+  revealButton();
+}
 ```
 
 We'll also jump back up to `run()` and call `bindEvents()`
 
-```
+```typescript
 async function run() {
   await initWeb3();
   await initContract();
@@ -319,7 +310,7 @@ async function run() {
 
 and implement it
 
-```
+```typescript
 function bindEvents() {
   document.querySelector('#rollBtn').addEventListener("click", roll);
 }
@@ -327,17 +318,15 @@ function bindEvents() {
 
 Now we’ll take a quick look at the blockchain contract to see how the game logic is structured.
 
-
-
 ----------
+
 # HighRoller.sol
 
+TODO
 
 ----------
 
-
 ## Game logic for HighRoller.sol
-
 
 We want to make our dice game very secure: the die rolls for both players will be determined by the contract. Each player submits a number, and the contract uses those two numbers as a distributed random-number generator to generate the die rolls we need. This only works if both players are ignorant of their opponents submission. In order to remove any advantage from the second player, we plan the structure of HighRoller
 
@@ -349,134 +338,126 @@ We want to make our dice game very secure: the die rolls for both players will b
 The information above is enough to determine the ActionType, Stage, AppState, and Action for the game.
 
 
-    //solidity
+```solidity
+contract HighRollerApp is CounterfactualApp {
 
-    contract HighRollerApp is CounterfactualApp {
+  enum ActionType {
+    START_GAME,
+    COMMIT_TO_HASH,
+    COMMIT_TO_NUM,
+    REVEAL
+  }
 
-      enum ActionType {
-        START_GAME,
-        COMMIT_TO_HASH,
-        COMMIT_TO_NUM,
-        REVEAL
-      }
+  enum Stage {
+    PRE_GAME,
+    COMMITTING_HASH,
+    COMMITTING_NUM,
+    REVEALING,
+    DONE
+  }
 
-      enum Stage {
-        PRE_GAME,
-        COMMITTING_HASH,
-        COMMITTING_NUM,
-        REVEALING,
-        DONE
-      }
+  enum Player {
+    FIRST,
+    SECOND
+  }
 
-      enum Player {
-        FIRST,
-        SECOND
-      }
+  struct AppState {
+    address[2] playerAddrs;
+    Stage stage;
+    bytes32 salt;
+    bytes32 commitHash;
+    uint256 playerFirstNumber;
+    uint256 playerSecondNumber;
+  }
 
-      struct AppState {
-        address[2] playerAddrs;
-        Stage stage;
-        bytes32 salt;
-        bytes32 commitHash;
-        uint256 playerFirstNumber;
-        uint256 playerSecondNumber;
-      }
-
-      struct Action {
-        ActionType actionType;
-        uint256 number;
-        bytes32 actionHash;
-      }
-
+  struct Action {
+    ActionType actionType;
+    uint256 number;
+    bytes32 actionHash;
+  }
+```
 
 Because it’s such a simple game (player1 → player2 → player1 → done), getTurnTaker() and isStateTerminal() are both quite simple.
 
+```solidity
+function isStateTerminal(AppState memory state)
+  public
+  pure
+  returns (bool)
+{
+  return state.stage == Stage.DONE;
+}
 
-    //solidity
-
-      function isStateTerminal(AppState memory state)
-        public
-        pure
-        returns (bool)
-      {
-        return state.stage == Stage.DONE;
-      }
-
-      function getTurnTaker(AppState memory state)
-        public
-        pure
-        returns (Player)
-      {
-        return state.stage == Stage.COMMITTING_NUM ? Player.SECOND : Player.FIRST;
-      }
-
-
+function getTurnTaker(AppState memory state)
+  public
+  pure
+  returns (Player)
+{
+  return state.stage == Stage.COMMITTING_NUM ? Player.SECOND : Player.FIRST;
+}
+```
 
 Actions for the game are defined in the applyAction function
 
+```solidity
+function applyAction(AppState memory state, Action memory action)
+  public
+  pure
+  returns (bytes memory)
+{
+  AppState memory nextState = state;
+  if (action.actionType == ActionType.START_GAME) {
+    require(
+      state.stage == Stage.PRE_GAME,
+      "Cannot apply START_GAME on PRE_GAME"
+    );
+    nextState.stage = Stage.COMMITTING_HASH;
+  } else if (action.actionType == ActionType.COMMIT_TO_HASH) {
+    require(
+      state.stage == Stage.COMMITTING_HASH,
+      "Cannot apply COMMIT_TO_HASH on COMMITTING_HASH"
+    );
+    nextState.stage = Stage.COMMITTING_NUM;
 
+    nextState.commitHash = action.actionHash;
+  } else if (action.actionType == ActionType.COMMIT_TO_NUM) {
+    require(
+      state.stage == Stage.COMMITTING_NUM,
+      "Cannot apply COMMITTING_NUM on COMMITTING_NUM"
+    );
+    nextState.stage = Stage.REVEALING;
 
+    nextState.playerSecondNumber = action.number;
+  } else if (action.actionType == ActionType.REVEAL) {
+    require(
+    state.stage == Stage.REVEALING
+    "Cannot apply REVEALING on REVEALING"
+    );
+    nextState.stage = Stage.DONE;
 
-    //solidity
-
-      function applyAction(AppState memory state, Action memory action)
-        public
-        pure
-        returns (bytes memory)
-      {
-        AppState memory nextState = state;
-        if (action.actionType == ActionType.START_GAME) {
-          require(
-            state.stage == Stage.PRE_GAME,
-            "Cannot apply START_GAME on PRE_GAME"
-          );
-          nextState.stage = Stage.COMMITTING_HASH;
-        } else if (action.actionType == ActionType.COMMIT_TO_HASH) {
-          require(
-            state.stage == Stage.COMMITTING_HASH,
-            "Cannot apply COMMIT_TO_HASH on COMMITTING_HASH"
-          );
-          nextState.stage = Stage.COMMITTING_NUM;
-
-          nextState.commitHash = action.actionHash;
-        } else if (action.actionType == ActionType.COMMIT_TO_NUM) {
-          require(
-            state.stage == Stage.COMMITTING_NUM,
-            "Cannot apply COMMITTING_NUM on COMMITTING_NUM"
-          );
-          nextState.stage = Stage.REVEALING;
-
-          nextState.playerSecondNumber = action.number;
-        } else if (action.actionType == ActionType.REVEAL) {
-          require(
-          state.stage == Stage.REVEALING
-          "Cannot apply REVEALING on REVEALING"
-          );
-          nextState.stage = Stage.DONE;
-
-          nextState.playerFirstNumber = action.playerFirstNumber;
-          nextState.salt = action.salt;
-        } else {
-          revert("Invalid action type");
-        }
-        return abi.encode(nextState);
-      }
+    nextState.playerFirstNumber = action.playerFirstNumber;
+    nextState.salt = action.salt;
+  } else {
+    revert("Invalid action type");
+  }
+  return abi.encode(nextState);
+}
+```
 
 You should also take a look at `highRoller(randomness)` which takes in the deterministic “random” seed made from the submitted player numbers and outputs the totals for each player.
 
-
-    //solidity
-
-    function highRoller(bytes32 randomness)
-        public
-        pure
-        returns(uint8 playerFirstTotal, uint8 playerSecondTotal)
-      {
-        (bytes8 hash1, bytes8 hash2,
-        bytes8 hash3, bytes8 hash4) = cutBytes32(randomness);
-        playerFirstTotal = bytes8toDiceRoll(hash1) + bytes8toDiceRoll(hash2);
-        playerSecondTotal = bytes8toDiceRoll(hash3) + bytes8toDiceRoll(hash4);
-      }
+```solidity
+function highRoller(bytes32 randomness)
+    public
+    pure
+    returns(uint8 playerFirstTotal, uint8 playerSecondTotal)
+  {
+    (bytes8 hash1, bytes8 hash2,
+    bytes8 hash3, bytes8 hash4) = cutBytes32(randomness);
+    playerFirstTotal = bytes8toDiceRoll(hash1) + bytes8toDiceRoll(hash2);
+    playerSecondTotal = bytes8toDiceRoll(hash3) + bytes8toDiceRoll(hash4);
+  }
+```
 
 Back to the javascript.
 
@@ -495,70 +476,74 @@ Back to the javascript.
 Now that we know what HighRoller.sol looks like, we can fill in the encoding for the game:
 
 
-    async function install() {
-      resetGameState();
+```typescript
+async function install() {
+  resetGameState();
 
-      let cfProvider = new cf.Provider(nodeProvider);
-      let appFactory = new cf.AppFactory(contractAddress, {
-        actionEncoding: "tuple(uint8 actionType, uint256 number, bytes32 actionHash)",
-        stateEncoding: "tuple(address[2] playerAddrs, uint8 stage, bytes32 salt, bytes32 commitHash, uint256 playerFirstNumber, uint256 playerSecondNumber)"
-      }, cfProvider);
+  let cfProvider = new cf.Provider(nodeProvider);
+  let appFactory = new cf.AppFactory(contractAddress, {
+    actionEncoding: "tuple(uint8 actionType, uint256 number, bytes32 actionHash)",
+    stateEncoding: "tuple(address[2] playerAddrs, uint8 stage, bytes32 salt, bytes32 commitHash, uint256 playerFirstNumber, uint256 playerSecondNumber)"
+  }, cfProvider);
 
-      proposeInstall(appFactory);
+  proposeInstall(appFactory);
 
-      cfProvider.on('installVirtual', onInstallEvent);
-      cfProvider.on('updateState', onUpdateEvent);
-    }
+  cfProvider.on('installVirtual', onInstallEvent);
+  cfProvider.on('updateState', onUpdateEvent);
+}
+```
 
 We can also describe the initiateState:
 
+```typescript
+async function proposeInstall(appFactory) {
+  const { intermediary, nodeAddress } = await getOpponentData();
+  const betAmount = '0.00001'; //in ETH
+  const initialState = {
+      playerAddrs: [
+        deriveAddress(
+          account.nodeAddress
+        ),
+        deriveAddress(
+          nodeAddress
+        )
+      ],
+      stage: HighRollerStage.PRE_GAME,
+      salt: HashZero,
+      commitHash: HashZero,
+      playerFirstNumber: 0,
+      playerSecondNumber: 0
+    },
 
-    async function proposeInstall(appFactory) {
-      const { intermediary, nodeAddress } = await getOpponentData();
-      const betAmount = '0.00001'; //in ETH
-      const initialState = {
-          playerAddrs: [
-            deriveAddress(
-              account.nodeAddress
-            ),
-            deriveAddress(
-              nodeAddress
-            )
-          ],
-          stage: HighRollerStage.PRE_GAME,
-          salt: HashZero,
-          commitHash: HashZero,
-          playerFirstNumber: 0,
-          playerSecondNumber: 0
-        },
-
-      await appFactory.proposeInstallVirtual({
-      initialState,
-      proposedToIdentifier: nodeAddress,
-      asset: {
-        assetType: 0 /* AssetType.ETH */
-      },
-      peerDeposit: parseEther(betAmount),
-      myDeposit: parseEther(betAmount),
-      timeout: 172800,
-      intermediaries: [intermediary]
-      });
-    }
+  await appFactory.proposeInstallVirtual({
+  initialState,
+  proposedToIdentifier: nodeAddress,
+  asset: {
+    assetType: 0 /* AssetType.ETH */
+  },
+  peerDeposit: parseEther(betAmount),
+  myDeposit: parseEther(betAmount),
+  timeout: 172800,
+  intermediaries: [intermediary]
+  });
+}
+```
 
 and a game reset:
 
+```typescript
+let web3Provider, nodeProvider, currentGame;
 
-    let web3Provider, nodeProvider, currentGame;
+...
 
-    ...
-
-    function resetGameState() {
-      currentGame = {
-        highRollerState: {
-          stage: HighRollerStage.PRE_GAME
-        }
-      };
+function resetGameState() {
+  currentGame = {
+    highRollerState: {
+      stage: HighRollerStage.PRE_GAME
     }
+  };
+}
+```
 
 ----------
 
@@ -567,28 +552,29 @@ and a game reset:
 
 Since solidity uses enums, we create a dictionary to make implementing actions and referencing stages easier for ourselves
 
+```typescript
+const { HashZero } = ethers.constants;
+const { bigNumberify, parseEther, solidityKeccak256 } = ethers.utils;
+const { fromExtendedKey } = ethers.utils.HDNode;
 
-    const { HashZero } = ethers.constants;
-    const { bigNumberify, parseEther, solidityKeccak256 } = ethers.utils;
-    const { fromExtendedKey } = ethers.utils.HDNode;
+const HighRollerAction = {
+  START_GAME: 0,
+  COMMIT_TO_HASH: 1,
+  COMMIT_TO_NUM: 2,
+  REVEAL: 3
+}
 
-    const HighRollerAction = {
-      START_GAME: 0,
-      COMMIT_TO_HASH: 1,
-      COMMIT_TO_NUM: 2,
-      REVEAL: 3
-    }
-
-    const HighRollerStage = {
-      PRE_GAME: 0,
-      COMMITTING_HASH: 1,
-      COMMITTING_NUM: 2,
-      REVEALING: 3,
-      DONE: 4
-    };
-
+const HighRollerStage = {
+  PRE_GAME: 0,
+  COMMITTING_HASH: 1,
+  COMMITTING_NUM: 2,
+  REVEALING: 3,
+  DONE: 4
+};
+```
 
 ----------
+
 ## roll()
 
 Finally, we’re ready to return to rolling the dice. This button will do a few things:
@@ -603,53 +589,52 @@ We’ll use the as-yet undefined takeAction function to do this, which will need
 
 The START_GAME action only uses the ActionType, so we leave the rest as zero:
 
+```typescript
+async function roll() {
+  disableButton();
 
-    async function roll() {
-      disableButton();
-
-      if (currentGame.highRollerState.stage === HighRollerStage.PRE_GAME) {
-        await takeAction({
-          number: 0,
-          actionType: HighRollerAction.START_GAME,
-          actionHash: HashZero
-        });
-    }
+  if (currentGame.highRollerState.stage === HighRollerStage.PRE_GAME) {
+    await takeAction({
+      number: 0,
+      actionType: HighRollerAction.START_GAME,
+      actionHash: HashZero
+    });
+}
+```
 
 While the COMMIT_TO_HASH uses both its type and actionHash:
 
+```typescript
+async function roll() {
+  disableButton();
 
+  if (currentGame.highRollerState.stage === HighRollerStage.PRE_GAME) {
+    await takeAction({
+      number: 0,
+      actionType: HighRollerAction.START_GAME,
+      actionHash: HashZero
+    });
 
-    async function roll() {
-      disableButton();
+    const playerFirstNumber = generatePlayerNumber();
 
-      if (currentGame.highRollerState.stage === HighRollerStage.PRE_GAME) {
-        await takeAction({
-          number: 0,
-          actionType: HighRollerAction.START_GAME,
-          actionHash: HashZero
-        });
+    await takeAction({
+      number: 0,
+      actionType: HighRollerAction.COMMIT_TO_HASH,
+      actionHash: solidityKeccak256(
+        ["bytes32", "uint256"],
+        [numberSalt, playerFirstNumber]
+      )
+    });
+}
 
-        const playerFirstNumber = generatePlayerNumber();
-
-        await takeAction({
-          number: 0,
-          actionType: HighRollerAction.COMMIT_TO_HASH,
-          actionHash: solidityKeccak256(
-            ["bytes32", "uint256"],
-            [numberSalt, playerFirstNumber]
-          )
-        });
-    }
-
-    async function takeAction(params) {
-      currentGame.highRollerState = (await currentGame.appInstance.takeAction(
-        params
-      ));
-    }
-
+async function takeAction(params) {
+  currentGame.highRollerState = (await currentGame.appInstance.takeAction(
+    params
+  ));
+}
+```
 
 This completes the first move in the game. Now we wait for the bot to receive the state in COMMITTING_NUM stage and move it into REVEALING
-
 
 ----------
 
@@ -659,20 +644,20 @@ This completes the first move in the game. Now we wait for the bot to receive th
 Presumably, the bot has received our state, committed their number and moved the game into the REVEALING stage. We need to code our player’s REVEAL action for the REVEALING stage, and then we need to code for the end of the game in the DONE stage.
 
 
+```typescript
+async function onUpdateEvent({ data }) {
+  const highRollerState = {
+    ...data.newState,
+    playerFirstNumber: currentGame.playerFirstNumber
+  };
 
-    async function onUpdateEvent({ data }) {
-      const highRollerState = {
-        ...data.newState,
-        playerFirstNumber: currentGame.playerFirstNumber
-      };
-
-      if (highRollerState.stage === HighRollerStage.REVEALING) {
-        await revealDice(highRollerState);
-      } else if (highRollerState.stage === HighRollerStage.DONE) {
-        await completeGame(highRollerState);
-      }
-    }
-
+  if (highRollerState.stage === HighRollerStage.REVEALING) {
+    await revealDice(highRollerState);
+  } else if (highRollerState.stage === HighRollerStage.DONE) {
+    await completeGame(highRollerState);
+  }
+}
+```
 
 ----------
 
@@ -681,16 +666,15 @@ Presumably, the bot has received our state, committed their number and moved the
 
 We reveal dice by taking the REVEAL action and submitting with it our number and salt
 
-
-    async function revealDice(highRollerState) {
-      await currentGame.appInstance.takeAction({
-        actionType: HighRollerAction.REVEAL,
-        actionHash: numberSalt,
-        number: highRollerState.playerFirstNumber.toString()
-      });
-    }
-
-
+```typescript
+async function revealDice(highRollerState) {
+  await currentGame.appInstance.takeAction({
+    actionType: HighRollerAction.REVEAL,
+    actionHash: numberSalt,
+    number: highRollerState.playerFirstNumber.toString()
+  });
+}
+```
 
 ----------
 
@@ -706,445 +690,443 @@ The completeGame() function will do two things:
 
 `appInstance.uninstall()` is a call to trigger the **resolve()** function in HighRoller.sol (which triggers any financial consequences/transactions).
 
+```typescript
+async function completeGame(highRollerState) {
+  const rolls = await executeContract(
+    highRollerState.playerFirstNumber,
+    highRollerState.playerSecondNumber
+  );
+
+  const { myRoll, opponentRoll } = determineRolls(highRollerState, rolls);
+  const gameState = determineGameState(myRoll, opponentRoll);
+
+  updateUIState({
+    myRoll,
+    opponentRoll,
+    gameState,
+    highRollerState
+  });
+
+  await currentGame.appInstance.uninstall(currentGame.appInstance.intermediaries[0]);
+
+  resetApp();
+}
 
 
-    async function completeGame(highRollerState) {
-      const rolls = await executeContract(
-        highRollerState.playerFirstNumber,
-        highRollerState.playerSecondNumber
-      );
+async function executeContract(
+  num1,
+  num2
+) {
+  const randomness = solidityKeccak256(["uint256"], [num1.mul(num2)]);
 
-      const { myRoll, opponentRoll } = determineRolls(highRollerState, rolls);
-      const gameState = determineGameState(myRoll, opponentRoll);
+  // Connect to the network
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
 
-      updateUIState({
-        myRoll,
-        opponentRoll,
-        gameState,
-        highRollerState
-      });
+  // We connect to the Contract using a Provider, so we will only
+  // have read-only access to the Contract. We also specify the contract method.
 
-      await currentGame.appInstance.uninstall(currentGame.appInstance.intermediaries[0]);
+  const abi = [
+  "function highRoller(bytes32 randomness) public pure returns(uint8 playerFirstTotal, uint8 playerSecondTotal)"
+];
 
-      resetApp();
-    }
+  const contract = new ethers.Contract(contractAddress, abi, provider);
 
+  const result = await contract.highRoller(randomness);
 
-    async function executeContract(
-      num1,
-      num2
-    ) {
-      const randomness = solidityKeccak256(["uint256"], [num1.mul(num2)]);
-
-      // Connect to the network
-      const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-
-      // We connect to the Contract using a Provider, so we will only
-      // have read-only access to the Contract. We also specify the contract method.
-
-      const abi = [
-      "function highRoller(bytes32 randomness) public pure returns(uint8 playerFirstTotal, uint8 playerSecondTotal)"
-    ];
-
-      const contract = new ethers.Contract(contractAddress, abi, provider);
-
-      const result = await contract.highRoller(randomness);
-
-      return {
-        playerFirstRoll: getDieNumbers(result[0]),
-        playerSecondRoll: getDieNumbers(result[1])
-      };
-    }
-
-
+  return {
+    playerFirstRoll: getDieNumbers(result[0]),
+    playerSecondRoll: getDieNumbers(result[1])
+  };
+}
+```
 
 ----------
 
-
 The rest is good old UI for the game.
 
+```typescript
+const { HashZero } = ethers.constants;
+const { bigNumberify, parseEther, solidityKeccak256 } = ethers.utils;
+const { fromExtendedKey } = ethers.utils.HDNode;
 
-    const { HashZero } = ethers.constants;
-    const { bigNumberify, parseEther, solidityKeccak256 } = ethers.utils;
-    const { fromExtendedKey } = ethers.utils.HDNode;
+const HighRollerAction = {
+  START_GAME: 0,
+  COMMIT_TO_HASH: 1,
+  COMMIT_TO_NUM: 2,
+  REVEAL: 3
+}
 
-    const HighRollerAction = {
-      START_GAME: 0,
-      COMMIT_TO_HASH: 1,
-      COMMIT_TO_NUM: 2,
-      REVEAL: 3
+const HighRollerStage = {
+  PRE_GAME: 0,
+  COMMITTING_HASH: 1,
+  COMMITTING_NUM: 2,
+  REVEALING: 3,
+  DONE: 4
+};
+
+const contractAddress = '0x91907355C59BA005843E791c88aAB80b779446c9';
+const numberSalt =
+"0xdfdaa4d168f0be935a1e1d12b555995bc5ea67bd33fce1bc5be0a1e0a381fc90";
+
+let web3Provider, nodeProvider, currentGame, account;
+
+async function run() {
+  account = await getUserData();
+
+  bindEvents();
+  await initWeb3();
+  await initContract();
+  await setupCF();
+  await install();
+}
+
+
+// GENERAL ETH SETUP
+function bindEvents() {
+  document.querySelector('#rollBtn').addEventListener("click", roll);
+}
+
+async function initWeb3() {
+  // Modern dapp browsers...
+  if (window.ethereum) {
+    web3Provider = window.ethereum;
+    try {
+      // Request account access
+      await window.ethereum.enable();
+    } catch (error) {
+      // User denied account access...
+      console.error("User denied account access")
+    }
+  }
+  // Legacy dapp browsers...
+  else if (window.web3) {
+    web3Provider = window.web3.currentProvider;
+  }
+  // If no injected web3 instance is detected, fall back to Ganache
+  else {
+    web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
+  }
+  web3 = new Web3(web3Provider);
+}
+
+async function initContract() {
+  let res = await fetch('HighRollerApp.json')
+  let HighRollerAppArtifact = await res.json();
+  let HighRollerApp = TruffleContract(HighRollerAppArtifact);
+
+  // Set the provider for our contract
+  HighRollerApp.setProvider(web3Provider);
+}
+
+
+// COUNTERFACTUAL
+async function setupCF() {
+  nodeProvider = new cf.NodeProvider();
+  await nodeProvider.connect();
+}
+
+async function install() {
+  resetGameState();
+
+  let cfProvider = new cf.Provider(nodeProvider);
+  let appFactory = new cf.AppFactory(contractAddress, {
+    actionEncoding: "tuple(uint8 actionType, uint256 number, bytes32 actionHash)",
+    stateEncoding: "tuple(address[2] playerAddrs, uint8 stage, bytes32 salt, bytes32 commitHash, uint256 playerFirstNumber, uint256 playerSecondNumber)"
+  }, cfProvider);
+
+  proposeInstall(appFactory);
+
+  cfProvider.on('installVirtual', onInstallEvent);
+  cfProvider.on('updateState', onUpdateEvent);
+}
+
+async function proposeInstall(appFactory) {
+  const { intermediary, nodeAddress } = await getOpponentData();
+  const betAmount = '0.00001';
+  const initialState = {
+      playerAddrs: [
+        deriveAddress(
+          account.nodeAddress
+        ),
+        deriveAddress(
+          nodeAddress
+        )
+      ],
+      stage: HighRollerStage.PRE_GAME,
+      salt: HashZero,
+      commitHash: HashZero,
+      playerFirstNumber: 0,
+      playerSecondNumber: 0
     }
 
-    const HighRollerStage = {
-      PRE_GAME: 0,
-      COMMITTING_HASH: 1,
-      COMMITTING_NUM: 2,
-      REVEALING: 3,
-      DONE: 4
+  await appFactory.proposeInstallVirtual({
+    initialState,
+    proposedToIdentifier: nodeAddress,
+    asset: {
+      assetType: 0 /* AssetType.ETH */
+    },
+    peerDeposit: parseEther(betAmount),
+    myDeposit: parseEther(betAmount),
+    timeout: 172800,
+    intermediaries: [intermediary]
+  });
+}
+
+async function onInstallEvent(event) {
+  currentGame.appInstance = event.data.appInstance;
+
+  revealButton();
+}
+
+async function onUpdateEvent({ data }) {
+  const highRollerState = {
+    ...data.newState,
+    playerFirstNumber: currentGame.playerFirstNumber
+  };
+
+  if (highRollerState.stage === HighRollerStage.REVEALING) {
+    await revealDice(highRollerState);
+  } else if (highRollerState.stage === HighRollerStage.DONE) {
+    await completeGame(highRollerState);
+  }
+}
+
+async function revealDice(highRollerState) {
+  await currentGame.appInstance.takeAction({
+    actionType: HighRollerAction.REVEAL,
+    actionHash: numberSalt,
+    number: highRollerState.playerFirstNumber.toString()
+  });
+}
+
+async function completeGame(highRollerState) {
+  const rolls = await executeContract(
+    highRollerState.playerFirstNumber,
+    highRollerState.playerSecondNumber
+  );
+
+  const { myRoll, opponentRoll } = determineRolls(highRollerState, rolls);
+  const gameState = determineGameState(myRoll, opponentRoll);
+
+  updateUIState({
+    myRoll,
+    opponentRoll,
+    gameState,
+    highRollerState
+  });
+
+  await currentGame.appInstance.uninstall(currentGame.appInstance.intermediaries[0]);
+
+  resetApp();
+}
+
+async function roll() {
+  disableButton();
+
+  if (currentGame.highRollerState.stage === HighRollerStage.PRE_GAME) {
+    await takeAction({
+      number: 0,
+      actionType: HighRollerAction.START_GAME,
+      actionHash: HashZero
+    });
+
+    const playerFirstNumber = generatePlayerNumber();
+
+    await takeAction({
+      number: 0,
+      actionType: HighRollerAction.COMMIT_TO_HASH,
+      actionHash: solidityKeccak256(
+        ["bytes32", "uint256"],
+        [numberSalt, playerFirstNumber]
+      )
+    });
+
+    currentGame.highRollerState.playerFirstNumber = currentGame.playerFirstNumber = bigNumberify(playerFirstNumber);
+  } else {
+    await takeAction({
+      number: generatePlayerNumber(),
+      actionType: HighRollerAction.COMMIT_TO_NUM,
+      actionHash: HashZero
+    });
+  }
+}
+
+async function takeAction(params) {
+  currentGame.highRollerState = (await currentGame.appInstance.takeAction(
+    params
+  ));
+}
+
+
+// CONTRACT EXECUTION
+async function executeContract(
+  num1,
+  num2
+) {
+  const randomness = solidityKeccak256(["uint256"], [num1.mul(num2)]);
+
+  // Connect to the network
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+
+  // We connect to the Contract using a Provider, so we will only
+  // have read-only access to the Contract
+  const contract = new ethers.Contract(contractAddress, abi, provider);
+
+  const result = await contract.highRoller(randomness);
+
+  return {
+    playerFirstRoll: getDieNumbers(result[0]),
+    playerSecondRoll: getDieNumbers(result[1])
+  };
+}
+
+function getDieNumbers(totalSum) {
+  // Choose result for each die.
+  if (totalSum === 12) {
+    return [6, 6];
+  }
+
+  if (totalSum > 2 && totalSum < 12) {
+    return [Math.floor(totalSum / 2), Math.ceil(totalSum / 2)];
+  }
+
+  if (totalSum > 2 && totalSum % 2 === 0) {
+    return [Math.floor(totalSum / 2) - 1, Math.ceil(totalSum / 2) + 1];
+  }
+
+  return [totalSum / 2, totalSum / 2];
+}
+
+
+// UI
+function updateUIState(uiState) {
+  document.querySelector("#gameResult").innerHTML = announceGameState(uiState.gameState);
+  document.querySelector("#yourRoll").innerHTML = `Your roll: ${uiState.myRoll[0]} + ${uiState.myRoll[1]}`;
+  document.querySelector("#opponentRoll").innerHTML = `Their roll: ${uiState.opponentRoll[0]} + ${uiState.opponentRoll[1]}`;
+}
+
+function announceGameState(gameState) {
+  switch (gameState) {
+    case 1: return "You won!!";
+    case 2: return "You lost...";
+    case 3: return "You tied?";
+  }
+}
+
+function hideButton() {
+  document.querySelector("#loadingSection").classList.remove("hidden");
+  document.querySelector("#rollSection").classList.add("hidden");
+}
+
+function revealButton() {
+  document.querySelector("#loadingSection").classList.add("hidden");
+  document.querySelector("#rollSection").classList.remove("hidden");
+}
+
+function disableButton() {
+  document.querySelector('#rollBtn').disabled = true;
+}
+
+function enableButton() {
+  document.querySelector('#rollBtn').disabled = false;
+}
+
+
+// UTILS
+function deriveAddress(nodeAddress) {
+  return fromExtendedKey(
+    nodeAddress
+  ).derivePath("0").address
+}
+
+function generatePlayerNumber() {
+  return 1 + Math.floor(Math.random() * Math.floor(1000));
+}
+
+function determineRolls(newState, rolls) {
+  const isProposing = newState.stage === HighRollerStage.REVEALING;
+  const myRoll = isProposing ? rolls.playerFirstRoll : rolls.playerSecondRoll;
+  const opponentRoll = isProposing
+    ? rolls.playerSecondRoll
+    : rolls.playerFirstRoll;
+
+  return { myRoll, opponentRoll };
+}
+
+function determineGameState(myRoll, opponentRoll) {
+  const totalMyRoll = myRoll[0] + myRoll[1];
+  const totalOpponentRoll = opponentRoll[0] + opponentRoll[1];
+
+  if (totalMyRoll > totalOpponentRoll) {
+    return 1;
+  } else if (totalMyRoll < totalOpponentRoll) {
+    return 2;
+  } else {
+    return 3;
+  }
+}
+
+function resetGameState() {
+  currentGame = {
+    highRollerState: {
+      stage: HighRollerStage.PRE_GAME
+    }
+  };
+}
+
+function resetApp() {
+  hideButton();
+  enableButton();
+  install();
+}
+
+async function getUserData() {
+  return (await requestDataFromPG("playground:request:user", "playground:response:user")).data.user;
+}
+
+async function getOpponentData() {
+  return (await requestDataFromPG("playground:request:matchmake", "playground:response:matchmake")).data.attributes;
+}
+
+async function requestDataFromPG(requestName, responseName) {
+  return await new Promise(resolve => {
+    const onPGResponse = (event) => {
+      if (event.data.toString().startsWith(responseName)) {
+        window.removeEventListener("message", onPGResponse);
+
+        const [, data] = event.data.split("|");
+        resolve(JSON.parse(data));
+      } else if (
+        event.data.data &&
+        typeof event.data.data.message === "string" &&
+        event.data.data.message.startsWith(responseName)
+      ) {
+        window.removeEventListener("message", onPGResponse);
+
+        resolve({ data: event.data.data.data });
+      }
     };
 
-    const contractAddress = '0x91907355C59BA005843E791c88aAB80b779446c9';
-    const numberSalt =
-    "0xdfdaa4d168f0be935a1e1d12b555995bc5ea67bd33fce1bc5be0a1e0a381fc90";
+    window.addEventListener("message", onPGResponse);
 
-    let web3Provider, nodeProvider, currentGame, account;
-
-    async function run() {
-      account = await getUserData();
-
-      bindEvents();
-      await initWeb3();
-      await initContract();
-      await setupCF();
-      await install();
-    }
-
-
-    // GENERAL ETH SETUP
-    function bindEvents() {
-      document.querySelector('#rollBtn').addEventListener("click", roll);
-    }
-
-    async function initWeb3() {
-      // Modern dapp browsers...
-      if (window.ethereum) {
-        web3Provider = window.ethereum;
-        try {
-          // Request account access
-          await window.ethereum.enable();
-        } catch (error) {
-          // User denied account access...
-          console.error("User denied account access")
-        }
-      }
-      // Legacy dapp browsers...
-      else if (window.web3) {
-        web3Provider = window.web3.currentProvider;
-      }
-      // If no injected web3 instance is detected, fall back to Ganache
-      else {
-        web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
-      }
-      web3 = new Web3(web3Provider);
-    }
-
-    async function initContract() {
-      let res = await fetch('HighRollerApp.json')
-      let HighRollerAppArtifact = await res.json();
-      let HighRollerApp = TruffleContract(HighRollerAppArtifact);
-
-      // Set the provider for our contract
-      HighRollerApp.setProvider(web3Provider);
-    }
-
-
-    // COUNTERFACTUAL
-    async function setupCF() {
-      nodeProvider = new cf.NodeProvider();
-      await nodeProvider.connect();
-    }
-
-    async function install() {
-      resetGameState();
-
-      let cfProvider = new cf.Provider(nodeProvider);
-      let appFactory = new cf.AppFactory(contractAddress, {
-        actionEncoding: "tuple(uint8 actionType, uint256 number, bytes32 actionHash)",
-        stateEncoding: "tuple(address[2] playerAddrs, uint8 stage, bytes32 salt, bytes32 commitHash, uint256 playerFirstNumber, uint256 playerSecondNumber)"
-      }, cfProvider);
-
-      proposeInstall(appFactory);
-
-      cfProvider.on('installVirtual', onInstallEvent);
-      cfProvider.on('updateState', onUpdateEvent);
-    }
-
-    async function proposeInstall(appFactory) {
-      const { intermediary, nodeAddress } = await getOpponentData();
-      const betAmount = '0.00001';
-      const initialState = {
-          playerAddrs: [
-            deriveAddress(
-              account.nodeAddress
-            ),
-            deriveAddress(
-              nodeAddress
-            )
-          ],
-          stage: HighRollerStage.PRE_GAME,
-          salt: HashZero,
-          commitHash: HashZero,
-          playerFirstNumber: 0,
-          playerSecondNumber: 0
-        }
-
-      await appFactory.proposeInstallVirtual({
-        initialState,
-        proposedToIdentifier: nodeAddress,
-        asset: {
-          assetType: 0 /* AssetType.ETH */
+    if (window === window.parent) {
+      // dApp not running in iFrame
+      window.postMessage(
+        {
+          type: "PLUGIN_MESSAGE",
+          data: { message: requestName }
         },
-        peerDeposit: parseEther(betAmount),
-        myDeposit: parseEther(betAmount),
-        timeout: 172800,
-        intermediaries: [intermediary]
-      });
-    }
-
-    async function onInstallEvent(event) {
-      currentGame.appInstance = event.data.appInstance;
-
-      revealButton();
-    }
-
-    async function onUpdateEvent({ data }) {
-      const highRollerState = {
-        ...data.newState,
-        playerFirstNumber: currentGame.playerFirstNumber
-      };
-
-      if (highRollerState.stage === HighRollerStage.REVEALING) {
-        await revealDice(highRollerState);
-      } else if (highRollerState.stage === HighRollerStage.DONE) {
-        await completeGame(highRollerState);
-      }
-    }
-
-    async function revealDice(highRollerState) {
-      await currentGame.appInstance.takeAction({
-        actionType: HighRollerAction.REVEAL,
-        actionHash: numberSalt,
-        number: highRollerState.playerFirstNumber.toString()
-      });
-    }
-
-    async function completeGame(highRollerState) {
-      const rolls = await executeContract(
-        highRollerState.playerFirstNumber,
-        highRollerState.playerSecondNumber
+        "*"
       );
-
-      const { myRoll, opponentRoll } = determineRolls(highRollerState, rolls);
-      const gameState = determineGameState(myRoll, opponentRoll);
-
-      updateUIState({
-        myRoll,
-        opponentRoll,
-        gameState,
-        highRollerState
-      });
-
-      await currentGame.appInstance.uninstall(currentGame.appInstance.intermediaries[0]);
-
-      resetApp();
+    } else {
+      window.parent.postMessage(requestName, "*");
     }
-
-    async function roll() {
-      disableButton();
-
-      if (currentGame.highRollerState.stage === HighRollerStage.PRE_GAME) {
-        await takeAction({
-          number: 0,
-          actionType: HighRollerAction.START_GAME,
-          actionHash: HashZero
-        });
-
-        const playerFirstNumber = generatePlayerNumber();
-
-        await takeAction({
-          number: 0,
-          actionType: HighRollerAction.COMMIT_TO_HASH,
-          actionHash: solidityKeccak256(
-            ["bytes32", "uint256"],
-            [numberSalt, playerFirstNumber]
-          )
-        });
-
-        currentGame.highRollerState.playerFirstNumber = currentGame.playerFirstNumber = bigNumberify(playerFirstNumber);
-      } else {
-        await takeAction({
-          number: generatePlayerNumber(),
-          actionType: HighRollerAction.COMMIT_TO_NUM,
-          actionHash: HashZero
-        });
-      }
-    }
-
-    async function takeAction(params) {
-      currentGame.highRollerState = (await currentGame.appInstance.takeAction(
-        params
-      ));
-    }
+  })
+}
 
 
-    // CONTRACT EXECUTION
-    async function executeContract(
-      num1,
-      num2
-    ) {
-      const randomness = solidityKeccak256(["uint256"], [num1.mul(num2)]);
-
-      // Connect to the network
-      const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-
-      // We connect to the Contract using a Provider, so we will only
-      // have read-only access to the Contract
-      const contract = new ethers.Contract(contractAddress, abi, provider);
-
-      const result = await contract.highRoller(randomness);
-
-      return {
-        playerFirstRoll: getDieNumbers(result[0]),
-        playerSecondRoll: getDieNumbers(result[1])
-      };
-    }
-
-    function getDieNumbers(totalSum) {
-      // Choose result for each die.
-      if (totalSum === 12) {
-        return [6, 6];
-      }
-
-      if (totalSum > 2 && totalSum < 12) {
-        return [Math.floor(totalSum / 2), Math.ceil(totalSum / 2)];
-      }
-
-      if (totalSum > 2 && totalSum % 2 === 0) {
-        return [Math.floor(totalSum / 2) - 1, Math.ceil(totalSum / 2) + 1];
-      }
-
-      return [totalSum / 2, totalSum / 2];
-    }
-
-
-    // UI
-    function updateUIState(uiState) {
-      document.querySelector("#gameResult").innerHTML = announceGameState(uiState.gameState);
-      document.querySelector("#yourRoll").innerHTML = `Your roll: ${uiState.myRoll[0]} + ${uiState.myRoll[1]}`;
-      document.querySelector("#opponentRoll").innerHTML = `Their roll: ${uiState.opponentRoll[0]} + ${uiState.opponentRoll[1]}`;
-    }
-
-    function announceGameState(gameState) {
-      switch (gameState) {
-        case 1: return "You won!!";
-        case 2: return "You lost...";
-        case 3: return "You tied?";
-      }
-    }
-
-    function hideButton() {
-      document.querySelector("#loadingSection").classList.remove("hidden");
-      document.querySelector("#rollSection").classList.add("hidden");
-    }
-
-    function revealButton() {
-      document.querySelector("#loadingSection").classList.add("hidden");
-      document.querySelector("#rollSection").classList.remove("hidden");
-    }
-
-    function disableButton() {
-      document.querySelector('#rollBtn').disabled = true;
-    }
-
-    function enableButton() {
-      document.querySelector('#rollBtn').disabled = false;
-    }
-
-
-    // UTILS
-    function deriveAddress(nodeAddress) {
-      return fromExtendedKey(
-        nodeAddress
-      ).derivePath("0").address
-    }
-
-    function generatePlayerNumber() {
-      return 1 + Math.floor(Math.random() * Math.floor(1000));
-    }
-
-    function determineRolls(newState, rolls) {
-      const isProposing = newState.stage === HighRollerStage.REVEALING;
-      const myRoll = isProposing ? rolls.playerFirstRoll : rolls.playerSecondRoll;
-      const opponentRoll = isProposing
-        ? rolls.playerSecondRoll
-        : rolls.playerFirstRoll;
-
-      return { myRoll, opponentRoll };
-    }
-
-    function determineGameState(myRoll, opponentRoll) {
-      const totalMyRoll = myRoll[0] + myRoll[1];
-      const totalOpponentRoll = opponentRoll[0] + opponentRoll[1];
-
-      if (totalMyRoll > totalOpponentRoll) {
-        return 1;
-      } else if (totalMyRoll < totalOpponentRoll) {
-        return 2;
-      } else {
-        return 3;
-      }
-    }
-
-    function resetGameState() {
-      currentGame = {
-        highRollerState: {
-          stage: HighRollerStage.PRE_GAME
-        }
-      };
-    }
-
-    function resetApp() {
-      hideButton();
-      enableButton();
-      install();
-    }
-
-    async function getUserData() {
-      return (await requestDataFromPG("playground:request:user", "playground:response:user")).data.user;
-    }
-
-    async function getOpponentData() {
-      return (await requestDataFromPG("playground:request:matchmake", "playground:response:matchmake")).data.attributes;
-    }
-
-    async function requestDataFromPG(requestName, responseName) {
-      return await new Promise(resolve => {
-        const onPGResponse = (event) => {
-          if (event.data.toString().startsWith(responseName)) {
-            window.removeEventListener("message", onPGResponse);
-
-            const [, data] = event.data.split("|");
-            resolve(JSON.parse(data));
-          } else if (
-            event.data.data &&
-            typeof event.data.data.message === "string" &&
-            event.data.data.message.startsWith(responseName)
-          ) {
-            window.removeEventListener("message", onPGResponse);
-
-            resolve({ data: event.data.data.data });
-          }
-        };
-
-        window.addEventListener("message", onPGResponse);
-
-        if (window === window.parent) {
-          // dApp not running in iFrame
-          window.postMessage(
-            {
-              type: "PLUGIN_MESSAGE",
-              data: { message: requestName }
-            },
-            "*"
-          );
-        } else {
-          window.parent.postMessage(requestName, "*");
-        }
-      })
-    }
-
-
-    // AND GO!!
-    window.onload = function() {
-      run();
-    };
+// AND GO!!
+window.onload = function() {
+  run();
+};
+```
