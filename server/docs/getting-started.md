@@ -231,11 +231,16 @@ async function install() {
 
   proposeInstall(appFactory);
 }
+```
+
+
+```typescript
+
+const initialState = {};
 
 async function proposeInstall(appFactory) {
   const { intermediary, nodeAddress } = await getOpponentData();
   const depositAmount = '0.00001';
-  const initialState = {};
 
   await appFactory.proposeInstallVirtual({
     initialState,
@@ -496,10 +501,7 @@ async function install() {
 We can also describe the initialState:
 
 ```typescript
-async function proposeInstall(appFactory) {
-  const { intermediary, nodeAddress } = await getOpponentData();
-  const betAmount = '0.00001'; //in ETH
-  const initialState = {
+const initialState = {
       playerAddrs: [
         deriveAddress(
           account.nodeAddress
@@ -514,19 +516,6 @@ async function proposeInstall(appFactory) {
       playerFirstNumber: 0,
       playerSecondNumber: 0
     };
-
-  await appFactory.proposeInstallVirtual({
-  initialState,
-  proposedToIdentifier: nodeAddress,
-  asset: {
-    assetType: 0 /* AssetType.ETH */
-  },
-  peerDeposit: parseEther(betAmount),
-  myDeposit: parseEther(betAmount),
-  timeout: 172800,
-  intermediaries: [intermediary]
-  });
-}
 ```
 
 and a game reset:
