@@ -109,7 +109,6 @@ const { bigNumberify, parseEther, solidityKeccak256 } = ethers.utils;
 const { fromExtendedKey } = ethers.utils.HDNode;
 
 const contractAddress = '0x91907355C59BA005843E791c88aAB80b779446c9';
-const numberSalt = "0xdfdaa4d168f0be935a1e1d12b555995bc5ea67bd33fce1bc5be0a1e0a381fc90";
 
 let web3Provider, nodeProvider;
 
