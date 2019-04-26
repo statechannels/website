@@ -833,9 +833,7 @@ Question: Is there a way to extract the values of each die that the contract gen
 
 ----------
 
-The rest is good old UI for the game and our html file.
-
-The UI:
+The rest is good old UI for the game
 
 ```typescript
 
@@ -872,7 +870,7 @@ function enableButton() {
 }
 ```
 
-index.html:
+and our html.
 ```html
 <html lang="en">
   <head>
