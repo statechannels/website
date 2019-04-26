@@ -113,6 +113,7 @@ const contractAddress = '0x91907355C59BA005843E791c88aAB80b779446c9';
 let web3Provider, nodeProvider;
 
 async function run() {
+
   await initWeb3();
   await initContract();
   await setupCF();
@@ -498,7 +499,7 @@ async function install() {
 }
 ```
 
-We can also describe the initialState:
+We can also describe the initialState, which consists of the two addresses and the Stage set to PRE_GAME:
 
 ```typescript
 const initialState = {
@@ -518,10 +519,76 @@ const initialState = {
     };
 ```
 
-and a game reset:
+In order to obtain the addresses, we include a couple of address-collecting utility functions
 
 ```typescript
-let web3Provider, nodeProvider, currentGame;
+async function getUserData() {
+  return (await requestDataFromPG("playground:request:user", "playground:response:user")).data.user;
+}
+
+async function getOpponentData() {
+  return (await requestDataFromPG("playground:request:matchmake", "playground:response:matchmake")).data.attributes;
+}
+
+async function requestDataFromPG(requestName, responseName) {
+  return await new Promise(resolve => {
+    const onPGResponse = (event) => {
+      if (event.data.toString().startsWith(responseName)) {
+        window.removeEventListener("message", onPGResponse);
+
+        const [, data] = event.data.split("|");
+        resolve(JSON.parse(data));
+      } else if (
+        event.data.data &&
+        typeof event.data.data.message === "string" &&
+        event.data.data.message.startsWith(responseName)
+      ) {
+        window.removeEventListener("message", onPGResponse);
+
+        resolve({ data: event.data.data.data });
+      }
+    };
+
+    window.addEventListener("message", onPGResponse);
+
+    if (window === window.parent) {
+      // dApp not running in iFrame
+      window.postMessage(
+        {
+          type: "PLUGIN_MESSAGE",
+          data: { message: requestName }
+        },
+        "*"
+      );
+    } else {
+      window.parent.postMessage(requestName, "*");
+    }
+  })
+}
+
+```
+
+and collect the users account information in the `run()` function:
+
+```typescript
+let web3Provider, nodeProvider, account;
+
+async function run() {
+  account = await getUserData();
+  
+  bindEvents();
+  await initWeb3();
+  await initContract();
+  await setupCF();
+  await install();
+}
+
+```
+
+Finally, we can include a game reset:
+
+```typescript
+let web3Provider, nodeProvider, account, currentGame;
 
 ...
 
