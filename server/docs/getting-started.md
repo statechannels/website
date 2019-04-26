@@ -766,7 +766,9 @@ Question: Is there a way to extract the values of each die that the contract gen
 
 ----------
 
-The rest is good old UI for the game.
+The rest is good old UI for the game and our html file.
+
+The UI:
 
 ```typescript
 
@@ -802,3 +804,47 @@ function enableButton() {
   document.querySelector('#rollBtn').disabled = false;
 }
 ```
+
+index.html:
+```html
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>High Roller</title>
+
+    <style type="text/css" media="screen">
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>High Roller</h1>
+
+    <div id="gameScreen">
+      <div id="yourRoll"></div>
+      <div id="opponentRoll"></div>
+      <div id="gameResult"></div>
+    </div>
+
+    <div id="loadingSection">
+      <div>Loading</div>
+    </div>
+
+    <div id="rollSection" class="hidden">
+      <button id="rollBtn" type="button">Roll</button>
+    </div>
+
+    <script src="//high-roller-staging.counterfactual.com/assets/ethers.js"></script>
+    <script src="//awesome-johnson-66964e.netlify.com/assets/cf.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
+```
+
+
