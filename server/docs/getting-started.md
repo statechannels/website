@@ -12,7 +12,7 @@ To streamline the guide, we’ve built a bot to automatically accept requests to
 
 ### How does Counterfactual work?
 
-For users, Counterfactual provides a safe central wallet in Metamask for state-channel funds and for tracking state in open channels.
+For users, Counterfactual provides a safe central wallet in Metamask for state channel funds and for tracking state in open channels.
 
 For developers, Counterfactual disentangles the UI of the dapp from the formal logic of the game being implemented.
 
