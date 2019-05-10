@@ -25,20 +25,20 @@ Users install the Counterfactual MetaMask plugin, which creates an Ethereum acco
 
 The backend logic for the game is implemented by pure functions in the Solidity contract, **HighRoller.sol**. Functionality handled includes answering the following questions:
 
-1. whose turn is it now?
-2. what are the possible actions / moves a user can legally execute?
-3. when is the game over?
-4. what happens to the stake when the game is over?
+1. Whose turn is it now?
+2. What are the possible actions / moves a user can legally execute?
+3. When is the game over?
+4. What happens to the stake when the game is over?
 
 The contract has already been written, and can be found [here](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol).
 
 The UI and client logic for the game is implemented in **HighRoller.js**. Functionality handled includes:
 
-1. proposing a game to another user
-2. accepting a proposal from another user
-3. taking an action when it is your turn
-4. listening for other players to take their turns
-5. leaving a game when it’s over
+1. Proposing a game to another user
+2. Accepting a proposal from another user
+3. Taking an action when it is your turn
+4. Listening for other players to take their turns
+5. Leaving a game when it’s over
 
 You will create this file and all the functionality by following this guide.
 
@@ -330,10 +330,10 @@ TODO
 
 We want to make our dice game very secure: the die rolls for both players will be determined by the contract. Each player submits a number, and the contract uses those two numbers as a distributed random-number generator to generate the die rolls we need. This only works if both players are ignorant of their opponents submission. In order to remove any advantage from the second player, we plan the structure of HighRoller
 
-- the first player **submits a hash** of their **number** with a **salt**
-- the second player **submits** their **number**
-- the first player **reveals** their number (by submitting both the number and the salt, which are checked against the original hash)
-- the contract generates die rolls and distributes money to the winner
+- The first player **submits a hash** of their **number** with a **salt**
+- The second player **submits** their **number**
+- The first player **reveals** their number (by submitting both the number and the salt, which are checked against the original hash)
+- The contract generates die rolls and distributes money to the winner
 
 The information above is enough to determine the ActionType, Stage, AppState, and Action for the game.
 
@@ -579,11 +579,11 @@ const HighRollerStage = {
 
 Finally, we’re ready to return to rolling the dice. This button will do a few things:
 
-1. it moves the game forward from PRE_GAME to COMMITTING_HASH by the START_GAME action
-2. then, since it’s still our player’s turn, we’ll need to take the COMMIT_TO_HASH action, which involves
-    1. generating our player’s number
-    2. generating our player’s salt
-    3. submitting to the contract (with the COMMIT_TO_HASH action) the hash of our number and salt
+1. It moves the game forward from PRE_GAME to COMMITTING_HASH by the START_GAME action
+2. Then, since it’s still our player’s turn, we’ll need to take the COMMIT_TO_HASH action, which involves
+    1. Generating our player’s number
+    2. Generating our player’s salt
+    3. Submitting to the contract (with the COMMIT_TO_HASH action) the hash of our number and salt
 
 We’ll use the as-yet undefined takeAction function to do this, which will need data specified for each of the three data types in the Action data structure.
 
@@ -683,8 +683,8 @@ async function revealDice(highRollerState) {
 
 The completeGame() function will do two things:
 
-- triggers the resolution of the solidity contract
-- retrieve information about the conclusion of the game from the solidity contract, so that it can present this information to the user.
+- Triggers the resolution of the solidity contract
+- Retrieve information about the conclusion of the game from the solidity contract, so that it can present this information to the user.
 
 `executeContract()` is a UI function. we read in the contract, and apply the winning condition function (called **highRoller()** ) to the random seed we generated (playerFirstNumber * playerSecondNumber)
 
