@@ -12,14 +12,14 @@ To streamline the guide, we’ve built a bot to automatically accept requests to
 
 ### How does Counterfactual work?
 
-For users, Counterfactual provides a safe central wallet in Metamask for state channel funds and for tracking state in open channels.
+For users, Counterfactual provides a safe central wallet in MetaMask for state channel funds and for tracking state in open channels.
 
 For developers, Counterfactual disentangles the UI of the dapp from the formal logic of the game being implemented.
 
 
 ### For Users
 
-Users install the Counterfactual Metamask plugin, which creates an Ethereum account in Metamask managed by the Counterfactual Node. Funds in this account are used to fund the individual channels that players choose to open in any specific Counterfactual app.
+Users install the Counterfactual MetaMask plugin, which creates an Ethereum account in MetaMask managed by the Counterfactual Node. Funds in this account are used to fund the individual channels that players choose to open in any specific Counterfactual app.
 
 ### For Developers
 
@@ -48,7 +48,7 @@ dapp UI ( HighRoller.js ) < -- 1 -- > Counterfactual Node < -- 2 -- > GameLogic 
 
 in three ways:
 
-1. **Starting a channel** - When users request / agree to play a game, the UI passes the request (via connection 1) to the Counterfactual node. The node then instantiates a state channel based on the game logic described by the contract (connection 2). Any staked funds the state channel requires are drawn from the Counterfactual wallet inside metamask.
+1. **Starting a channel** - When users request / agree to play a game, the UI passes the request (via connection 1) to the Counterfactual node. The node then instantiates a state channel based on the game logic described by the contract (connection 2). Any staked funds the state channel requires are drawn from the Counterfactual wallet inside MetaMask.
 
 2. **State management in a channel** - In an open channel, requests to modify state are passed to the CF node (via connection 1). The node calls the pure functions of the solidity contract (via connection 2) to verify that requests to modify state are valid, and to alter the state accordingly. The node makes updated state available to members of the channel (via connection 1).
 
