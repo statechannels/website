@@ -322,7 +322,7 @@ function bindEvents() {
 }
 ```
 
-Now we’ll take a quick look at the HighRoller.sol contract to see how the game logic is structured.
+Now we’ll take a quick look at the [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) contract to see how the game logic is structured.
 
 ----------
 
