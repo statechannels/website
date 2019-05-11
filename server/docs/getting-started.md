@@ -68,10 +68,10 @@ in three ways:
 
 # HighRoller.js
 
-## Truffle unbox
+## Counterfactual's Truffle box
 
 
-We’ll start our new Counterfactual project with the template in the Counterfactual Truffle box. After installing [Truffle](https://truffleframework.com/tutorials/pet-shop), unbox the Counterfactual Truffle box:
+We’ll start our new Counterfactual project with the template in the Counterfactual Truffle box. After installing [Truffle](https://truffleframework.com/docs/truffle/getting-started/installation), and familiarizing yourself with how to [create a new Truffle project](https://truffleframework.com/docs/truffle/getting-started/creating-a-project), unbox the Counterfactual Truffle box:
 
 ```bash
 mkdir my-project
@@ -79,7 +79,7 @@ cd my-project
 truffle unbox counterfactual/truffle-box
 ```
 
-Looking through the template, you’ll find:
+In the box, you'll find `src/app.js`. In this UI template, you'll find: 
 
 * some initialized variables ( `let web3Provider, nodeProvider;` )
 * the async function `run()` which contains calls to
