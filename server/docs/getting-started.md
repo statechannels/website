@@ -4,7 +4,7 @@
 
 Counterfactual is a development framework that makes it easy to build dapps on Ethereum that take advanatge of state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and fee-less, while still retaining the security of an on-chain application.
 
-State channels are particularly useful for any dapp that relies on turn-based state updates between a fixed set of users that conditionally execute a transaction based on that state. For instance, a board game dapp where users take turns making moves on the board until a winner emerges and is rewarded with some money.
+State channels are particularly useful for any dapp that relies on turn-based state updates between a fixed set of users that conditionally execute a transaction based on that state. For instance, a board game dapp where users take turns applying actions to the board until a winner emerges and is rewarded with some money.
 
 In this guide, we’ll build a simple game using the Counterfactual framework. The game is called High Roller: a dice game where two users stake ETH, roll two dice, and the one with the higher roll wins all of the staked money.
 
@@ -26,7 +26,7 @@ Users install the Counterfactual MetaMask plugin, which creates an Ethereum acco
 The backend logic for the game is implemented by pure functions in the Solidity contract, **HighRoller.sol**. Functionality handled includes answering the following questions:
 
 1. Whose turn is it now?
-2. What are the possible actions / moves a user can legally execute?
+2. What are the possible actions a user can legally execute?
 3. When is the game over?
 4. What happens to the stake when the game is over?
 
@@ -644,7 +644,7 @@ const HighRollerStage = {
 
 Finally, we’re ready to return to rolling the dice. This button will do a few things:
 
-1. It moves the game forward from PRE_GAME to COMMITTING_HASH by the START_GAME action
+1. It moves the game stage forward from PRE_GAME to COMMITTING_HASH by the START_GAME action
 2. Then, since it’s still our player’s turn, we’ll need to take the COMMIT_TO_HASH action, which involves
     1. Generating our player’s number
     2. Generating our player’s salt
@@ -700,7 +700,7 @@ async function takeAction(params) {
 }
 ```
 
-This completes the first move in the game. Now we wait for the bot to receive the state in COMMITTING_NUM stage and move it into REVEALING
+This completes the first action of the game. Now we wait for the bot to receive the state in COMMITTING_NUM stage and apply the COMMIT_TO_NUM action, taking the game stage into REVEALING.
 
 ----------
 
