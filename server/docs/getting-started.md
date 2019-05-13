@@ -26,21 +26,22 @@ INSERT DIAGRAM FUNDVCHANN HERE
 ### For Developers
 
 
-Developers use the Counterfactual framework to manage the logic of virtual state channels. Counterfactual is modular, with the following components:
+Developers will use the Counterfactual framework to implement the logic of virtual state channels. In this Getting Started Guide, you'll learn how to 
 
-1. Intermediary (we'll be using the Counterfactual Playground Server, as discussed above)
+1. designate the **application logic** for the virtual channel
+1. design the **user interface** for the virtual channel
 
-
-The application logic for the dapp is implemented by pure functions in a blockchain contract. Functionality handled includes answering the following questions:
+The application logic for Counterfactual dapps are implemented by pure functions in a deployed Ethereum contract. Functionality handled includes answering the following questions:
 
 1. Whose turn is it now?
 2. What are the possible actions a user can legally execute?
 3. When is the game over?
 4. What happens to the stake when the game is over?
 
-The contract has already been written, and can be found [here](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol).
+In this guide, we've provided you with a deployed contract, [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol), to use for your dapp. Take a quick look at **HighRoller.sol** and make sure you can find how it answers questions 1-4.
 
-The UI and client logic for the game is implemented in **HighRoller.js**. Functionality handled includes:
+
+The UI and client logic for the game will be implemented in **HighRoller.js**. Functionality handled includes:
 
 1. Proposing a game to another user
 2. Accepting a proposal from another user
@@ -48,30 +49,15 @@ The UI and client logic for the game is implemented in **HighRoller.js**. Functi
 4. Listening for other players to take their turns
 5. Leaving a game when it’s over
 
-You will create this file and all the functionality by following this guide.
-
-Counterfactual nodes implement the interactions between these two components
-
-dapp UI ( HighRoller.js ) < -- 1 -- > Counterfactual Node < -- 2 -- > GameLogic (HighRoller.sol)
-
-in three ways:
-
-1. **Starting a channel** - When users request / agree to play a game, the UI passes the request (via connection 1) to the Counterfactual node. The node then instantiates a state channel based on the game logic described by the contract (connection 2). Any staked funds the state channel requires are drawn from the Counterfactual wallet inside MetaMask.
-
-2. **State management in a channel** - In an open channel, requests to modify state are passed to the CF node (via connection 1). The node calls the pure functions of the solidity contract (via connection 2) to verify that requests to modify state are valid, and to alter the state accordingly. The node makes updated state available to members of the channel (via connection 1).
-
-3. **Ending a game**  - When the game is over, the dapp (HighRoller.js) must request (via connection 1) that the node end the game. In turn, the CF node will (via connection 2) verify that the game is over, and if it is over, have the contract implement the transactions that resolve the game.
-
 
 ### In this Getting Start Guide, you’ll learn how to:
 
-1. Instantiate a Counterfactual NodeProvider
-2. Connect the NodeProvider to a blockchain contract through an AppFactory instance
-3. Use the AppFactory’s `.proposeInstallVirtual()` method to propose a new virtual state channel based on the AppFactory instance’s settings (including stakes and game logic)
-4. Use the NodeProvider’s `.on()`  method to listen for accepted installs and updated state in the channel
-5. Use the AppInstance’s `.takeAction()` method to propose updates to state in the channel
-6. Use the AppInstance’s `.uninstall()` method to propose closing and resolving the channel
-
+1. Create a new Counterfactual project repo
+1. Create an `AppFactory` instance, which will specify the application logic
+1. Use the `AppFactory`'s `proposeInstallVirtual()` method to propose a new virtual state channel 
+1. Use a Counterfactual `NodeProvider`'s `.on()` method to listen for accepted installs and updated state in the virtual channel
+1. Use the `AppFactory`'s `takeAction()` method to propose updates to state in the virtual channel
+1. Use the `AppFactory`'s `uninstall()` method to propose closing and resolving the virtual channel
 
 
 
