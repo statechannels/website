@@ -329,11 +329,11 @@ async function setupCF() {
 
 ## The `install()` Function
 
-This is where we begin coding the game.
+This is where we begin developing **HighRoller**.
 
 ### Counterfactual's `Provider` and `AppFactory` Objects
 
-The install function will
+The `install()` function will
 * reset game state
 * instantiate a Counterfactual `Provider`
 * instantiate a Counterfactual `AppFactory` instance.
@@ -352,7 +352,7 @@ async function install() {
   resetGameState();
   
   const contractAddress = '0x91907355C59BA005843E791c88aAB80b779446c9';
-  const actionEncoding = 'tuple(uint8 actionType, uint256 number, bytes32 actionHash)',
+  const actionEncoding = 'tuple(uint8 actionType, uint256 number, bytes32 actionHash)';
   const stateEncoding = 'tuple(address[2] playerAddrs, uint8 stage, bytes32 salt, bytes32 commitHash, uint256 playerFirstNumber, uint256 playerSecondNumber)'
 
   let cfProvider = new cf.Provider(nodeProvider);
