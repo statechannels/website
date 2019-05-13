@@ -821,12 +821,6 @@ function generateSalt() {
 
 ----------
 
-
-
-
-
-----------
-
 ## Filling in some UI
 
 The rest is good old UI for the game
@@ -915,7 +909,22 @@ function enableButton() {
 
 ## Conclusion
 
+You've just built your first state channels dapp with the Counterfactul framework. Along the way, you learned how:
+  * to set up an `AppFactory` instance with
+    - application logic designated by an ethereum contract
+    - appropriate encodings for `AppState` and `Action` in the channel 
+    - the `Provider` instance which is enabled to interact `appFactory` instances
+  * to propose a virtual state channel, or `appInstance`, to other users with `appFactory`'s `proposeVirtualInstall()` method
+  * the virtual channel is funded by a ledger channel with the `Intermediary`
+  * the `Provider` instance `cfProvider` listens in the channel for `virtualInstall` and `updateState`
+  * we use the `appInstance`'s method `takeAction()` to modify state in the channel
+  * to uninstall the virtual channel via the `appInstance`'s method `uninstall()`
 
-
-
-
+You've also seen a little bit of the coding patterns for Counterfactual App solidity contracts, including the necessary data types
+  * `Action`
+  * `AppState`
+and functions
+  * `getTurnTaker()`
+  * `isStateTerminal()`
+  * `applyAction()`
+  * `resolve()`.
