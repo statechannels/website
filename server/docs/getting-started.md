@@ -497,7 +497,7 @@ async function proposeInstall(appFactory) {
 
 
 
-### The Provider's `on()` Method
+### The Provider's on() Method
 
 The `install()` function is also where we instruct the cfProvider to **listen** in the channel for
 
