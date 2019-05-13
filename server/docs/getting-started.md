@@ -38,7 +38,7 @@ The application logic for a Counterfactual dapp is described in a deployed Ether
 3. When is the game over?
 4. What happens to the stake when the game is over?
 
-In this guide, we've provided you with a deployed contract, [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol), to use for your dapp. Take a quick look at **HighRoller.sol** and see if you can find how it answers questions 1-4 (we'll also run through this together in the next [section](link here)).
+In this guide, we've provided you with a deployed contract, [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol), to use for your dapp. Take a quick look at **HighRoller.sol** and see if you can find how it answers questions 1-4. We'll also run through this together in the next [section](https://github.com/counterfactual/website/blob/joey-editing/server/docs/getting-started.md#a-quick-look-at-the-contract).
 
 
 The UI and client logic for the game will be implemented in **app.js**. Functionality handled includes:
@@ -72,10 +72,142 @@ One more thing: to streamline your first dapp, we've built and deployed a bot th
 
 Let's take a quick look at the [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) contract to see how the game logic is structured.
 
+## Game logic for HighRoller.sol
+
+We want to make our dice game very secure: the application logic requires both users to submit a random number -- the product of the two numbers is used as the source of randomness for both players' dice rolls; this is what makes it secure. In order to prevent the second player from using information about the first player's number, we use a commit-by-hash and reveal paradigm:
+  * The first player submits a **hash** of their **number** with a random **salt**
+  * The second player submits their **number**
+  * The first player **reveals** their number by submitting the number and the salt, which are checked against the original hash
+  * The contract generates die rolls for each player
+
+The information above is enough to determine the structure of the **HighRoller** `AppState` and `Action`, both of which are required for Counterfactual Apps. We also note the data structures `ActionType` and `Stage` that the contract developer chose to create:
+
+```solidity
+contract HighRollerApp is CounterfactualApp {
+
+  enum ActionType {
+    START_GAME,
+    COMMIT_TO_HASH,
+    COMMIT_TO_NUM,
+    REVEAL
+  }
+
+  enum Stage {
+    PRE_GAME,
+    COMMITTING_HASH,
+    COMMITTING_NUM,
+    REVEALING,
+    DONE
+  }
+
+  enum Player {
+    FIRST,
+    SECOND
+  }
+
+  struct AppState {
+    address[2] playerAddrs;
+    Stage stage;
+    bytes32 salt;
+    bytes32 commitHash;
+    uint256 playerFirstNumber;
+    uint256 playerSecondNumber;
+  }
+
+  struct Action {
+    ActionType actionType;
+    uint256 number;
+    bytes32 actionHash;
+  }
+```
+
+Because it’s such a simple game (Player1 → Player2 → Player1 → DONE), `getTurnTaker()` and `isStateTerminal()` are easy to implement:
+
+```solidity
+function isStateTerminal(AppState memory state)
+  public
+  pure
+  returns (bool)
+{
+  return state.stage == Stage.DONE;
+}
+
+function getTurnTaker(AppState memory state)
+  public
+  pure
+  returns (Player)
+{
+  return state.stage == Stage.COMMITTING_NUM ? Player.SECOND : Player.FIRST;
+}
+```
+
+Actions for the game are defined (and constrained) in the `applyAction` function:
+
+```solidity
+function applyAction(AppState memory state, Action memory action)
+  public
+  pure
+  returns (bytes memory)
+{
+  AppState memory nextState = state;
+  if (action.actionType == ActionType.START_GAME) {
+    require(
+      state.stage == Stage.PRE_GAME,
+      "Cannot apply START_GAME on PRE_GAME"
+    );
+    nextState.stage = Stage.COMMITTING_HASH;
+  } else if (action.actionType == ActionType.COMMIT_TO_HASH) {
+    require(
+      state.stage == Stage.COMMITTING_HASH,
+      "Cannot apply COMMIT_TO_HASH on COMMITTING_HASH"
+    );
+    nextState.stage = Stage.COMMITTING_NUM;
+
+    nextState.commitHash = action.actionHash;
+  } else if (action.actionType == ActionType.COMMIT_TO_NUM) {
+    require(
+      state.stage == Stage.COMMITTING_NUM,
+      "Cannot apply COMMITTING_NUM on COMMITTING_NUM"
+    );
+    nextState.stage = Stage.REVEALING;
+
+    nextState.playerSecondNumber = action.number;
+  } else if (action.actionType == ActionType.REVEAL) {
+    require(
+    state.stage == Stage.REVEALING,
+    "Cannot apply REVEALING on REVEALING"
+    );
+    nextState.stage = Stage.DONE;
+
+    nextState.playerFirstNumber = action.playerFirstNumber;
+    nextState.salt = action.salt;
+  } else {
+    revert("Invalid action type");
+  }
+  return abi.encode(nextState);
+}
+```
+
+You should also take a look at `highRoller()` which takes in the deterministic “random” seed made from the submitted player numbers and outputs dice roll totals for each player.
+
+```solidity
+function highRoller(bytes32 randomness)
+    public
+    pure
+    returns(uint8 playerFirstTotal, uint8 playerSecondTotal)
+  {
+    (bytes8 hash1, bytes8 hash2,
+    bytes8 hash3, bytes8 hash4) = cutBytes32(randomness);
+    playerFirstTotal = bytes8toDiceRoll(hash1) + bytes8toDiceRoll(hash2);
+    playerSecondTotal = bytes8toDiceRoll(hash3) + bytes8toDiceRoll(hash4);
+  }
+```
+
 
 ----------
 
 # Getting Started
+
 
 ## Counterfactual's Truffle box
 
