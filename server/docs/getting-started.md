@@ -495,13 +495,11 @@ async function proposeInstall(appFactory) {
 ```
 
 
-
-
 ### The Provider's on() Method
 
 The `install()` function is also where we instruct the cfProvider to **listen** in the channel for
 
-- successful installVirtual
+- successful `proposeInstallVirtual()`
 - changes in state in the channel
 
 and to react to those changes via the `Provider` method `on()`. 
@@ -524,15 +522,15 @@ and to react to those changes via the `Provider` method `on()`.
     }
 ```
 
-When cfProvider detects ‘installVirtual’ is successful (when the bot accepts our proposeInstallVirtual) it calls the function `onInstallEvent()`. When it detects updates in state in the virtual channel, it calls `onUpdateEvent()`.
+When cfProvider detects `installVirtual` (when the bot accepts our `proposeInstallVirtual()`) it calls the function `onInstallEvent()`; when it detects `updateState` (updates in state in the virtual channel), it calls `onUpdateEvent()`.
 
 
 ----------
 
 
-## onInstallEvent()
+## Responding to installVirtual
 
-When the cfProvider confirms our proposed install has been accepted, we reveal the “Roll the dice” button for our player to use.
+When `cfProvider` confirms our proposed install has been accepted, we reveal the “Roll the dice” button for our player to use.
 
 ```typescript
 async function onInstallEvent(event) {
@@ -563,42 +561,12 @@ function bindEvents() {
 }
 ```
 
-
-## encoding, initial state, and resetGameState()
-
-
-
-Finally, we can include a game reset:
-
-```typescript
-let web3Provider, nodeProvider, account, currentGame;
-
-...
-
-function resetGameState() {
-  currentGame = {
-    highRollerState: {
-      stage: HighRollerStage.PRE_GAME
-    },
-    salt: generateSalt()
-  };
-}
-```
-
-where the `generateSalt()` function looks like
-
-```
-function generateSalt() {
-  return ethers.utils.bigNumberify(ethers.utils.randomBytes(32)).toHexString();
-}
-```
-
 ----------
 
 
-## referencing action and stage
+## Referencing ActionType and Stage
 
-Since solidity uses enums, we create a dictionary to make implementing actions and referencing stages easier for ourselves
+Before we implement the `roll()` function, let's create a dictionary to make referencing actions and stages easier for ourselves
 
 ```typescript
 const { HashZero } = ethers.constants;
@@ -623,17 +591,20 @@ const HighRollerStage = {
 
 ----------
 
-## roll()
+## The takeAction() Method of appInstance
 
-Finally, we’re ready to return to rolling the dice. This button will do a few things:
+Before we implement the `roll()` function, we need to describe how we make updates to state in the virtual channel.
+    
+The only way to make changes to state is via the `takeAction()` method of `appInstance`, which we implement now as a global function:
 
-1. It moves the game stage forward from PRE_GAME to COMMITTING_HASH by the START_GAME action
-2. Then, since it’s still our player’s turn, we’ll need to take the COMMIT_TO_HASH action, which involves
-    1. Generating our player’s number
-    2. Generating our player’s salt
-    3. Submitting to the contract (with the COMMIT_TO_HASH action) the hash of our number and salt
+```typescript
+async function takeAction(params) {
+  currentGame.highRollerState = (await currentGame.appInstance.takeAction(
+    params
+  ));
+}
+```
 
-We’ll use the as-yet undefined takeAction function to do this, which will need data specified for each of the three data types in the Action data structure.
 
 The START_GAME action only uses the ActionType, so we leave the rest as zero:
 
@@ -674,12 +645,6 @@ async function roll() {
         [numberSalt, playerFirstNumber]
       )
     });
-}
-
-async function takeAction(params) {
-  currentGame.highRollerState = (await currentGame.appInstance.takeAction(
-    params
-  ));
 }
 ```
 
@@ -894,5 +859,39 @@ and our html.
   </body>
 </html>
 ```
+
+----------
+
+## Game reset
+
+We implement the `resetGameState()` function that `install()` called earlier.
+
+```typescript
+let web3Provider, nodeProvider, account, currentGame;
+
+...
+
+function resetGameState() {
+  currentGame = {
+    highRollerState: {
+      stage: HighRollerStage.PRE_GAME
+    },
+    salt: generateSalt()
+  };
+}
+```
+
+Where the `generateSalt()` function looks like
+
+```
+function generateSalt() {
+  return ethers.utils.bigNumberify(ethers.utils.randomBytes(32)).toHexString();
+}
+```
+
+----------
+
+## Conclusion
+
 
 
