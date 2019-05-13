@@ -68,6 +68,9 @@ One more thing: to streamline your first dapp, we've built and deployed a bot th
 
 ---------
 
+# A Quick Look at the Contract
+
+Let's take a quick look at the [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) contract to see how the game logic is structured.
 
 
 ----------
