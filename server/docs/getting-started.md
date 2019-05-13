@@ -12,7 +12,7 @@ In this guide, we’ll build a simple game using the Counterfactual framework. T
 
 ## For Users
 
-Users interact with Counterfactual dapps through their wallet-enabled web browser. In this Getting Started Guide, we'll be using  MetaMask and the Counterfactual MetaMask plugin. Check out the installation guide [INSERT LINK TO INSTALL GUIDE HERE](no link yet).
+Users interact with Counterfactual dapps through their wallet-enabled web browser. In this Getting Started Guide, we'll be using  MetaMask and the Counterfactual MetaMask plugin. Check out the installation guide [here](https://github.com/counterfactual/monorepo/tree/master/packages/cf-metamask-extension).
 
 INSERT DIAGRAM-USER HERE
 
