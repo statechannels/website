@@ -8,9 +8,9 @@ State channels are useful for any dapp that relies on turn-based state updates b
 
 In this guide, we’ll build a simple game using the Counterfactual framework. The game is called High Roller: a dice game where two users stake ETH, roll two dice, and the one with the higher roll wins all of the staked money.
 
-### How does Counterfactual work?
+## How does Counterfactual work?
 
-## For Users
+### For Users
 
 Users interact with Counterfactual dapps through their wallet-enabled web browser. In this Getting Started Guide, we'll be using  MetaMask and the Counterfactual MetaMask plugin. Check out the installation guide [here](https://github.com/counterfactual/monorepo/tree/master/packages/cf-metamask-extension).
 
