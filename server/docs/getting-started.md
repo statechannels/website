@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Counterfactual is a web development framework that makes it easy to build dapps on Ethereum that take advanatge of state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and fee-less, while still retaining the security of an on-chain application.
+Counterfactual is a web development framework that makes it easy to build dapps on Ethereum that take advantage of state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and fee-less, while still retaining the security of an on-chain application.
 
 State channels are useful for any dapp that relies on turn-based state updates between a fixed set of users that conditionally execute a transaction based on that state. For instance, a board game dapp where users take turns applying actions to the board until a winner emerges and is rewarded with some money.
 
@@ -16,7 +16,7 @@ Users interact with Counterfactual dapps through their wallet-enabled web browse
 
 INSERT DIAGRAM-USER HERE
 
-The Counterfactual framework is designed build web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). For us just means that each user already has an established ledger channel with a server-like entity we call the Intermediary. Each user's browser wallet will contain a dedicated ethereum address that contains available funds for dapps hosted by a given Intermediary. In this Getting Started Guide, we'll use the Counterfactual Playground Server as our Intermediary; you can sign up for an account [here](https://playground.counterfactual.com/).
+Counterfactual is designed build web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). For us just means that each user already has an established ledger channel with a server-like entity we call the Intermediary. Each user's browser wallet will contain a dedicated ethereum address that contains available funds for dapps hosted by a given Intermediary. In this Getting Started Guide, we'll use the Counterfactual Playground Server as our Intermediary; you can sign up for an account [here](https://playground.counterfactual.com/).
 
 When two users agree to install an instance of a dapp via the Playground, the Playground will allocate funds from their dedicated addresses into a virtual channel for the dapp instance.
 
@@ -25,7 +25,13 @@ INSERT DIAGRAM FUNDVCHANN HERE
 
 ### For Developers
 
-The backend logic for the game is implemented by pure functions in the Solidity contract, **HighRoller.sol**. Functionality handled includes answering the following questions:
+
+Developers use the Counterfactual framework to manage the logic of virtual state channels. Counterfactual is modular, with the following components:
+
+1. Intermediary (we'll be using the Counterfactual Playground Server, as discussed above)
+
+
+The application logic for the dapp is implemented by pure functions in a blockchain contract. Functionality handled includes answering the following questions:
 
 1. Whose turn is it now?
 2. What are the possible actions a user can legally execute?
