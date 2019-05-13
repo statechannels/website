@@ -329,11 +329,11 @@ async function setupCF() {
 ----------
 
 
-## The `install()` Function
+## The install() Function
 
 This is where we begin developing **HighRoller**.
 
-### Counterfactual's `Provider` and `AppFactory` Objects
+### Counterfactual's Provider and AppFactory Objects
 
 The `install()` function will
 * reset game state
@@ -367,7 +367,7 @@ async function install() {
 
 We’ll come back to define the function `resetGameState()` once we have a better sense of what that will entail.
 
-### The `AppFactory`'s Install Method
+### The AppFactory's Install Method
 
 The `install()` function will also call `proposeInstall(appFactory)`. This function is where we will implement the `AppFactory`'s `proposeInstallVirtual()` method, which will propose creating a virtual state channel with underlying application logic given by the contract specified in `appFactory`'s instantiation. To propose the new virtual channel, we'll need to specify:
   * initial state for the channel
@@ -497,9 +497,9 @@ async function proposeInstall(appFactory) {
 
 
 
-### The `Provider`'s `on()` Method
+### The Provider's `on()` Method
 
-The install() function is also where we instruct the cfProvider to **listen** in the channel for
+The `install()` function is also where we instruct the cfProvider to **listen** in the channel for
 
 - successful installVirtual
 - changes in state in the channel
