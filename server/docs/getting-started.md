@@ -298,7 +298,7 @@ async function initWeb3() {
 
 ## initContract()
 
-Look This is where you'll create a TruffleContract object corresponding to the **HighRoller.sol** solidity contract. When developing your own apps, you'll use Truffle to point to your contract as you develop it in the same way.
+This is where you'll create a TruffleContract object corresponding to the **HighRoller.sol** solidity contract. When developing your own apps, you'll use Truffle to point to your contract as you develop it.
 
 ```typescript
 async function initContract() {
@@ -345,15 +345,15 @@ The `AppFactory` is how we create new virtual channels, and it needs to know:
   * the encodings for the application state and actions (to maintain the privacy of state and actions)
   * which `Provider` can listen and propose updates to state.
 
-We'll input the contract address for **HighRoller.sol**.
+We'll input the contract address for **HighRoller.sol**, and fill in the details of the `Action` and `AppState` data types for the encodings.
 
 ```typescript
 async function install() {
   resetGameState();
   
   const contractAddress = '0x91907355C59BA005843E791c88aAB80b779446c9';
-  const actionEncoding = '';
-  const stateEncoding = '';
+  const actionEncoding = 'tuple(uint8 actionType, uint256 number, bytes32 actionHash)',
+  const stateEncoding = 'tuple(address[2] playerAddrs, uint8 stage, bytes32 salt, bytes32 commitHash, uint256 playerFirstNumber, uint256 playerSecondNumber)'
 
   let cfProvider = new cf.Provider(nodeProvider);
   let appFactory = new cf.AppFactory(contractAddress, {
@@ -374,6 +374,7 @@ The `install()` function will also call `proposeInstall(appFactory)`. This funct
   * how long before timeout
   * the intermediary
 
+By looking at the application logic, we expect the initial game state to begin with the `playerAddrs` set and `state.STAGE` set to `Stage.PRE_GAME`, which we can fill in now. 
 
 ```typescript
 async function install() {
@@ -387,12 +388,24 @@ async function install() {
 
   proposeInstall(appFactory);
 }
-```
 
+...
 
-```typescript
-
-const initialState = {};
+const initialState = {
+      playerAddrs: [
+        deriveAddress(
+          account.nodeAddress
+        ),
+        deriveAddress(
+          nodeAddress
+        )
+      ],
+      stage: HighRollerStage.PRE_GAME,
+      salt: HashZero,
+      commitHash: HashZero,
+      playerFirstNumber: 0,
+      playerSecondNumber: 0
+    };
 
 async function proposeInstall(appFactory) {
   const { intermediary, nodeAddress } = await getOpponentData();
@@ -418,7 +431,7 @@ The install() function is also where we instruct the cfProvider to **listen** in
 - successful installVirtual
 - changes in state in the channel
 
-and to react to those changes via the method  `.on(listenFor, respondWith() )`.
+and to react to those changes via the `Provider` method `on()`.
 
 
 ```typescript
@@ -513,25 +526,7 @@ async function install() {
 }
 ```
 
-We can also describe the initialState, which consists of the two addresses and the Stage set to PRE_GAME:
 
-```typescript
-const initialState = {
-      playerAddrs: [
-        deriveAddress(
-          account.nodeAddress
-        ),
-        deriveAddress(
-          nodeAddress
-        )
-      ],
-      stage: HighRollerStage.PRE_GAME,
-      salt: HashZero,
-      commitHash: HashZero,
-      playerFirstNumber: 0,
-      playerSecondNumber: 0
-    };
-```
 
 In order to obtain the addresses, we include a couple of address-collecting utility functions
 
