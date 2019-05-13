@@ -713,11 +713,9 @@ The `completeGame()` function will do two things:
   * retrieve information about the conclusion of the game from the contract, so that this information can be presented to the user
   * proposes uninstalling the appInstance (which will also resolve any transactions, like distributing the staked ether to the player with the higher roll total).
 
-The only way to uninstall a virtual state channel is with a call to `appInstance.uninstall()`; in order for this call to be valid, the `isStateTerminal()` function must return `True` when applied to `appInstance.state`.
+The only way to uninstall a virtual state channel is with a call to `appInstance.uninstall()`; in order for this call to be valid, the `isStateTerminal()` function (in **HighRoller.sol**) must return `True` when applied to the current state.
 
-We'll also build a function called `executeContract()`: it reads in the function  (called `highRoller()`) from the TruffleContract object to determine 
-
-`appInstance.uninstall()` is a call to trigger the **resolve()** function in HighRoller.sol (which triggers any financial consequences/transactions).
+We'll also build a function called `executeContract()`: it reads in a function called `highRoller()` from the `HighRollerApp` TruffleContract object, and uses this function to display the results of the game. 
 
 ```typescript
 async function completeGame(highRollerState) {
@@ -792,8 +790,6 @@ function getDieNumbers(totalSum) {
 
 ```
 
-Question: Is there a way to extract the values of each die that the contract generates rather than extracting the summed totals of the values and making up the individual die values? Why or why not?
-
 ----------
 
 ## Game reset
@@ -824,6 +820,14 @@ function generateSalt() {
 ```
 
 ----------
+
+
+
+
+
+----------
+
+## Filling in some UI
 
 The rest is good old UI for the game
 
@@ -861,8 +865,10 @@ function enableButton() {
   document.querySelector('#rollBtn').disabled = false;
 }
 ```
+----------
 
-and our html.
+## Our HTML
+
 ```html
 <html lang="en">
   <head>
@@ -908,6 +914,8 @@ and our html.
 
 
 ## Conclusion
+
+
 
 
 
