@@ -41,7 +41,7 @@ The application logic for a Counterfactual dapp is described in a deployed Ether
 In this guide, we've provided you with a deployed contract, [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol), to use for your dapp. Take a quick look at **HighRoller.sol** and make sure you can find how it answers questions 1-4.
 
 
-The UI and client logic for the game will be implemented in **HighRoller.js**. Functionality handled includes:
+The UI and client logic for the game will be implemented in **app.js**. Functionality handled includes:
 
 1. Proposing a game to another user
 2. Accepting a proposal from another user
@@ -54,20 +54,20 @@ The UI and client logic for the game will be implemented in **HighRoller.js**. F
 
 1. Create a new Counterfactual project repo
 1. Create an `AppFactory` instance, which will specify the application logic for **HighRoller**
-1. Use the `AppFactory`'s `proposeInstallVirtual()` method to propose a new virtual state channel when the user wants to play **HighRoller**
-1. Use the Counterfactual `NodeProvider`'s `on()` method to listen for the second player to accept the proposed virtual install
-1. Use the Counterfactual `NodeProvider`'s `on()` method to listen for updated state in the virtual channel
+1. Use the `AppFactory`'s method `proposeInstallVirtual()` to propose a new virtual state channel when the user wants to play **HighRoller**
+1. Use the Counterfactual `NodeProvider`'s method `on()` to listen for the second player to accept the proposed virtual install
+1. Use the Counterfactual `NodeProvider`'s method `on()` to listen for updated state in the virtual channel
 1. Use the `AppFactory`'s `takeAction()` method to [update state](https://specs.counterfactual.com/en/latest/01-app-definition.html#progressing-state) in the virtual channel
 1. Use the `AppFactory`'s `uninstall()` method to close and resolve the virtual channel
 
 Along the way, we'll see how the Counterfactual framework ensures that state is updated safely and securely. 
 
-One more thing: to streamline your first dapp, we've built and deployed a bot that will accept `proposeInstallVirtual()` requests for **HighRoller** and play the game with your user; this means you only have to code the UI for the first player.
+One more thing: to streamline your first dapp, we've built and deployed a bot that will accept `proposeInstallVirtual()` requests for **HighRoller** and play the game with your user. This means you only have to code the UI for the first player of **HighRoller**.
 
 
 ----------
 
-# HighRoller.js
+# Getting Started
 
 ## Counterfactual's Truffle box
 
