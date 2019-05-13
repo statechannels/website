@@ -57,8 +57,8 @@ The UI and client logic for the game will be implemented in **app.js**. Function
 1. Use the `AppFactory`'s method `proposeInstallVirtual()` to propose a new virtual state channel when the user wants to play **HighRoller**
 1. Use the Counterfactual `NodeProvider`'s method `on()` to listen for the second player to accept the proposed virtual install
 1. Use the Counterfactual `NodeProvider`'s method `on()` to listen for updated state in the virtual channel
-1. Use the `AppFactory`'s `takeAction()` method to [update state](https://specs.counterfactual.com/en/latest/01-app-definition.html#progressing-state) in the virtual channel
-1. Use the `AppFactory`'s `uninstall()` method to close and resolve the virtual channel
+1. Use the `AppInstance`'s `takeAction()` method to [update state](https://specs.counterfactual.com/en/latest/01-app-definition.html#progressing-state) in the virtual channel
+1. Use the `AppInstance`'s `uninstall()` method to close and resolve the virtual channel
 
 Along the way, we'll see how the Counterfactual framework ensures that state is updated safely and securely. 
 
@@ -232,6 +232,8 @@ In the box, you'll find `src/app.js`. In this UI template, you'll find:
     * install() // **this is where we'll code the application UI**
 * a call to the `run()` function
 
+Throughout this guide, we'll be using this template as a reference for developing `app.js`.
+
 ----------
 
 ## Constants
@@ -300,7 +302,7 @@ async function initWeb3() {
 
 ## initContract()
 
-This is where you'll create a TruffleContract object corresponding to the **HighRoller.sol** solidity contract. When developing your own apps, you'll use Truffle to point to your contract as you develop it.
+This is where you'll create a TruffleContract object corresponding to the **HighRoller.sol** solidity contract. When developing your own apps, you'll use Truffle to point to your contract as you develop it. Let's fill some of the details in now.
 
 ```typescript
 async function initContract() {
@@ -367,9 +369,9 @@ async function install() {
 
 We’ll come back to define the function `resetGameState()` once we have a better sense of what that will entail.
 
-### The AppFactory's Install Method
+### The AppFactory's proposeVirtualInstall Method
 
-The `install()` function will also call `proposeInstall(appFactory)`. This function is where we will implement the `AppFactory`'s `proposeInstallVirtual()` method, which will propose creating a virtual state channel with underlying application logic given by the contract specified in `appFactory`'s instantiation. To propose the new virtual channel, we'll need to specify:
+The `install()` function will also call `proposeInstall(appFactory)`. This function is where we will implement `appFactory`'s `proposeInstallVirtual()` method, which will propose creating a virtual state channel with underlying application logic specified in `appFactory`'s instantiation. To propose the new virtual channel, we'll need to specify:
   * initial state for the channel
   * who is participating in the channel
   * what are the stakes (and in what currency)
@@ -442,7 +444,7 @@ async function run() {
 
 ```
 
-Now we're ready to describe the `initialState`:
+Now we're ready to describe the `initialState` and call the `proposeVirtualInstall()` method:
 
 
 ```typescript
@@ -530,9 +532,13 @@ When cfProvider detects `installVirtual` (when the bot accepts our `proposeInsta
 
 ## Responding to installVirtual
 
-When `cfProvider` confirms our proposed install has been accepted, we reveal the “Roll the dice” button for our player to use.
+When `cfProvider` confirms our proposed install has been accepted, we want to save the event data as an `AppInstance` object, and reveal the “Roll the dice” button for our player to use.
 
 ```typescript
+let web3Provider, nodeProvider, account, currentGame;
+
+...
+
 async function onInstallEvent(event) {
   currentGame.appInstance = event.data.appInstance;
 
@@ -540,7 +546,7 @@ async function onInstallEvent(event) {
 }
 ```
 
-We'll also jump back up to `run()` and call `bindEvents()`
+We'll also jump back up to `run()`, call `bindEvents()`, and implement it.
 
 ```typescript
 async function run() {
@@ -551,11 +557,9 @@ async function run() {
   await setupCF();
   await install();
 }
-```
 
-and implement it
+...
 
-```typescript
 function bindEvents() {
   document.querySelector('#rollBtn').addEventListener("click", roll);
 }
@@ -563,10 +567,9 @@ function bindEvents() {
 
 ----------
 
-
 ## Referencing ActionType and Stage
 
-Before we implement the `roll()` function, let's create a dictionary to make referencing actions and stages easier for ourselves
+Before we continue, let's create a dictionary to make referencing actions and stages easier for ourselves
 
 ```typescript
 const { HashZero } = ethers.constants;
@@ -591,6 +594,7 @@ const HighRollerStage = {
 
 ----------
 
+
 ## The takeAction() Method of appInstance
 
 Before we implement the `roll()` function, we need to describe how we make updates to state in the virtual channel.
@@ -605,8 +609,16 @@ async function takeAction(params) {
 }
 ```
 
+We’re ready to implement the `roll()` function. This button will do a few things:
 
-The START_GAME action only uses the ActionType, so we leave the rest as zero:
+1. It moves the game stage forward from `Stage.PRE_GAME` to `Stage.COMMITTING_HASH` by the `START_GAME` action
+1. Then, since it’s still the first player’s turn, we’ll need to take the `COMMIT_TO_HASH` action, which involves
+    1. Generating our player’s number
+    1. Generating our player’s salt
+    1. Updating `state.commitHash` (with the COMMIT_TO_HASH action) to record the hash of our number and salt
+    
+
+The `START_GAME` action only uses `ActionType`, so we include that and leave the rest as zero:
 
 ```typescript
 async function roll() {
@@ -622,7 +634,7 @@ async function roll() {
 }
 ```
 
-While the COMMIT_TO_HASH uses both its type and actionHash:
+While the `COMMIT_TO_HASH` action uses both the `ActionType` and `actionHash`:
 
 ```typescript
 async function roll() {
@@ -648,15 +660,17 @@ async function roll() {
 }
 ```
 
-This completes the first action of the game. Now we wait for the bot to receive the state in COMMITTING_NUM stage and apply the COMMIT_TO_NUM action, taking the game stage into REVEALING.
+This completes the first action of the game. Now we wait for the bot to receive the state in `COMMITTING_NUM` stage and apply the `COMMIT_TO_NUM` action, taking the game state into the `REVEALING` stage and back into our player's hands.
 
 ----------
 
-
 ## onUpdateEvent()
 
-Presumably, the bot has received our state, committed their number and moved the game into the REVEALING stage. We need to code our player’s REVEAL action for the REVEALING stage, and then we need to code for the end of the game in the DONE stage.
+Once the bot has received our state, it will `COMMIT_TO_NUM` progressing `state.Stage` into the `REVEALING` stage. Our `cfProvider` will catch the state update in the channel, and in response we need to 
+  * code our player’s `REVEAL` action for the `REVEALING` stage, moving the `state.Stage` into the `DONE` stage
+  * code an end for the game in the `DONE` stage.
 
+We'll do this now with the `onUpdateEvent()` function:
 
 ```typescript
 async function onUpdateEvent({ data }) {
@@ -678,7 +692,7 @@ async function onUpdateEvent({ data }) {
 
 ## revealDice()
 
-We reveal dice by taking the REVEAL action and submitting with it our number and salt
+We reveal dice by taking the `REVEAL` action and submitting with it our number and salt:
 
 ```typescript
 async function revealDice(highRollerState) {
@@ -695,12 +709,13 @@ async function revealDice(highRollerState) {
 
 ## completeGame()
 
-The completeGame() function will do two things:
+The `completeGame()` function will do two things:
+  * retrieve information about the conclusion of the game from the contract, so that this information can be presented to the user
+  * proposes uninstalling the appInstance (which will also resolve any transactions, like distributing the staked ether to the player with the higher roll total).
 
-- Triggers the resolution of the solidity contract
-- Retrieve information about the conclusion of the game from the solidity contract, so that it can present this information to the user.
+The only way to uninstall a virtual state channel is with a call to `appInstance.uninstall()`; in order for this call to be valid, the `isStateTerminal()` function must return `True` when applied to `appInstance.state`.
 
-`executeContract()` is a UI function. we read in the contract, and apply the winning condition function (called **highRoller()** ) to the random seed we generated (playerFirstNumber * playerSecondNumber)
+We'll also build a function called `executeContract()`: it reads in the function  (called `highRoller()`) from the TruffleContract object to determine 
 
 `appInstance.uninstall()` is a call to trigger the **resolve()** function in HighRoller.sol (which triggers any financial consequences/transactions).
 
@@ -778,6 +793,35 @@ function getDieNumbers(totalSum) {
 ```
 
 Question: Is there a way to extract the values of each die that the contract generates rather than extracting the summed totals of the values and making up the individual die values? Why or why not?
+
+----------
+
+## Game reset
+
+We implement the `resetGameState()` function that `install()` called earlier.
+
+```typescript
+let web3Provider, nodeProvider, account, currentGame;
+
+...
+
+function resetGameState() {
+  currentGame = {
+    highRollerState: {
+      stage: HighRollerStage.PRE_GAME
+    },
+    salt: generateSalt()
+  };
+}
+```
+
+Where the `generateSalt()` function looks like
+
+```
+function generateSalt() {
+  return ethers.utils.bigNumberify(ethers.utils.randomBytes(32)).toHexString();
+}
+```
 
 ----------
 
@@ -862,34 +906,6 @@ and our html.
 
 ----------
 
-## Game reset
-
-We implement the `resetGameState()` function that `install()` called earlier.
-
-```typescript
-let web3Provider, nodeProvider, account, currentGame;
-
-...
-
-function resetGameState() {
-  currentGame = {
-    highRollerState: {
-      stage: HighRollerStage.PRE_GAME
-    },
-    salt: generateSalt()
-  };
-}
-```
-
-Where the `generateSalt()` function looks like
-
-```
-function generateSalt() {
-  return ethers.utils.bigNumberify(ethers.utils.randomBytes(32)).toHexString();
-}
-```
-
-----------
 
 ## Conclusion
 
