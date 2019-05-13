@@ -72,7 +72,7 @@ One more thing: to streamline your first dapp, we've built and deployed a bot th
 
 Let's take a quick look at the [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) contract to see how the game logic is structured.
 
-## Game logic for HighRoller.sol
+### Game logic for HighRoller.sol
 
 We want to make our dice game very secure: the application logic requires both users to submit a random number -- the product of the two numbers is used as the source of randomness for both players' dice rolls; this is what makes it secure. In order to prevent the second player from using information about the first player's number, we use a commit-by-hash and reveal paradigm:
   * The first player submits a **hash** of their **number** with a random **salt**
@@ -208,6 +208,8 @@ function highRoller(bytes32 randomness)
 
 # Getting Started
 
+----------
+
 
 ## Counterfactual's Truffle box
 
@@ -242,7 +244,7 @@ We’ll import some [ethers.js](https://docs.ethers.io/ethers.js) [constants and
 * solidityKeccak256 // solidity hash function
 * fromExtendedKey // creates an ethereum wallet-like object, [HDNode](https://docs.ethers.io/ethers.js/html/api-advanced.html) from an extended private or public key
 
-We'll import them at the top of `app.js`:
+Let's import them at the top of `app.js`:
 
 ```typescript
 const { HashZero } = ethers.constants;
@@ -374,7 +376,74 @@ The `install()` function will also call `proposeInstall(appFactory)`. This funct
   * how long before timeout
   * the intermediary
 
-By looking at the application logic, we expect the initial game state to begin with the `playerAddrs` set and `state.STAGE` set to `Stage.PRE_GAME`, which we can fill in now. 
+By looking at the application logic, we expect the initial game state to begin with the `playerAddrs` set and `state.STAGE` set to `Stage.PRE_GAME`. In order to obtain the addresses, we include a couple of address-collecting utility functions
+
+```typescript
+async function getUserData() {
+  return (await requestDataFromPG("playground:request:user", "playground:response:user")).data.user;
+}
+
+async function getOpponentData() {
+  return (await requestDataFromPG("playground:request:matchmake", "playground:response:matchmake")).data.attributes;
+}
+
+async function requestDataFromPG(requestName, responseName) {
+  return await new Promise(resolve => {
+    const onPGResponse = (event) => {
+      if (event.data.toString().startsWith(responseName)) {
+        window.removeEventListener("message", onPGResponse);
+
+        const [, data] = event.data.split("|");
+        resolve(JSON.parse(data));
+      } else if (
+        event.data.data &&
+        typeof event.data.data.message === "string" &&
+        event.data.data.message.startsWith(responseName)
+      ) {
+        window.removeEventListener("message", onPGResponse);
+
+        resolve({ data: event.data.data.data });
+      }
+    };
+
+    window.addEventListener("message", onPGResponse);
+
+    if (window === window.parent) {
+      // dApp not running in iFrame
+      window.postMessage(
+        {
+          type: "PLUGIN_MESSAGE",
+          data: { message: requestName }
+        },
+        "*"
+      );
+    } else {
+      window.parent.postMessage(requestName, "*");
+    }
+  })
+}
+
+```
+
+and collect the account information when we call the `run()` function:
+
+```typescript
+let web3Provider, nodeProvider, account;
+
+async function run() {
+  account = await getUserData();
+  
+  bindEvents();
+  await initWeb3();
+  await initContract();
+  await setupCF();
+  await install();
+}
+
+```
+
+Now we're ready to describe the `initialState`:
+
 
 ```typescript
 async function install() {
@@ -426,12 +495,16 @@ async function proposeInstall(appFactory) {
 ```
 
 
+
+
+### The `Provider`'s `on()` Method
+
 The install() function is also where we instruct the cfProvider to **listen** in the channel for
 
 - successful installVirtual
 - changes in state in the channel
 
-and to react to those changes via the `Provider` method `on()`.
+and to react to those changes via the `Provider` method `on()`. 
 
 
 ```typescript
@@ -451,7 +524,7 @@ and to react to those changes via the `Provider` method `on()`.
     }
 ```
 
-When cfProvider detects ‘installVirtual’ is successful (when the bot accepts our proposeInstallVirtual) it calls the function **onInstallEvent().** When it detects updates in state in the virtualChannel, it calls **onUpdateEvent().**  This is the in-channel state management mechanism for Interface 1.
+When cfProvider detects ‘installVirtual’ is successful (when the bot accepts our proposeInstallVirtual) it calls the function `onInstallEvent()`. When it detects updates in state in the virtual channel, it calls `onUpdateEvent()`.
 
 
 ----------
@@ -491,108 +564,9 @@ function bindEvents() {
 ```
 
 
-
-Back to the javascript.
-
-
-----------
-
-
-# HighRoller.js
-
-
-----------
-
-
 ## encoding, initial state, and resetGameState()
 
-Now that we know what HighRoller.sol looks like, we can fill in the encoding for the game:
 
-
-```typescript
-async function install() {
-  resetGameState();
-
-  let cfProvider = new cf.Provider(nodeProvider);
-  let appFactory = new cf.AppFactory(contractAddress, {
-    actionEncoding: "tuple(uint8 actionType, uint256 number, bytes32 actionHash)",
-    stateEncoding: "tuple(address[2] playerAddrs, uint8 stage, bytes32 salt, bytes32 commitHash, uint256 playerFirstNumber, uint256 playerSecondNumber)"
-  }, cfProvider);
-
-  proposeInstall(appFactory);
-
-  cfProvider.on('installVirtual', onInstallEvent);
-  cfProvider.on('updateState', onUpdateEvent);
-}
-```
-
-
-
-In order to obtain the addresses, we include a couple of address-collecting utility functions
-
-```typescript
-async function getUserData() {
-  return (await requestDataFromPG("playground:request:user", "playground:response:user")).data.user;
-}
-
-async function getOpponentData() {
-  return (await requestDataFromPG("playground:request:matchmake", "playground:response:matchmake")).data.attributes;
-}
-
-async function requestDataFromPG(requestName, responseName) {
-  return await new Promise(resolve => {
-    const onPGResponse = (event) => {
-      if (event.data.toString().startsWith(responseName)) {
-        window.removeEventListener("message", onPGResponse);
-
-        const [, data] = event.data.split("|");
-        resolve(JSON.parse(data));
-      } else if (
-        event.data.data &&
-        typeof event.data.data.message === "string" &&
-        event.data.data.message.startsWith(responseName)
-      ) {
-        window.removeEventListener("message", onPGResponse);
-
-        resolve({ data: event.data.data.data });
-      }
-    };
-
-    window.addEventListener("message", onPGResponse);
-
-    if (window === window.parent) {
-      // dApp not running in iFrame
-      window.postMessage(
-        {
-          type: "PLUGIN_MESSAGE",
-          data: { message: requestName }
-        },
-        "*"
-      );
-    } else {
-      window.parent.postMessage(requestName, "*");
-    }
-  })
-}
-
-```
-
-and collect the users account information in the `run()` function:
-
-```typescript
-let web3Provider, nodeProvider, account;
-
-async function run() {
-  account = await getUserData();
-  
-  bindEvents();
-  await initWeb3();
-  await initContract();
-  await setupCF();
-  await install();
-}
-
-```
 
 Finally, we can include a game reset:
 
