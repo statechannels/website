@@ -2,24 +2,26 @@
 
 ## Introduction
 
-Counterfactual is a development framework that makes it easy to build dapps on Ethereum that take advanatge of state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and fee-less, while still retaining the security of an on-chain application.
+Counterfactual is a web development framework that makes it easy to build dapps on Ethereum that take advanatge of state channels. State channels are an “off-chain” or “layer 2” technique that allow your dapp to be instant and fee-less, while still retaining the security of an on-chain application.
 
-State channels are particularly useful for any dapp that relies on turn-based state updates between a fixed set of users that conditionally execute a transaction based on that state. For instance, a board game dapp where users take turns applying actions to the board until a winner emerges and is rewarded with some money.
+State channels are useful for any dapp that relies on turn-based state updates between a fixed set of users that conditionally execute a transaction based on that state. For instance, a board game dapp where users take turns applying actions to the board until a winner emerges and is rewarded with some money.
 
 In this guide, we’ll build a simple game using the Counterfactual framework. The game is called High Roller: a dice game where two users stake ETH, roll two dice, and the one with the higher roll wins all of the staked money.
 
-To streamline the guide, we’ve built a bot to automatically accept requests to play High Roller; this means you only have to code the UI for the first player (the one who proposes to play the game).
-
 ### How does Counterfactual work?
 
-For users, Counterfactual provides a safe central wallet in MetaMask for state channel funds and for tracking state in open channels.
+## For Users
 
-For developers, Counterfactual disentangles the UI of the dapp from the formal logic of the game being implemented.
+Users interact with Counterfactual dapps through their wallet-enabled web browser. In this Getting Started Guide, we'll be using  MetaMask and the Counterfactual MetaMask plugin. Check out the installation guide [INSERT LINK TO INSTALL GUIDE HERE](no link yet).
 
+INSERT DIAGRAM-USER HERE
 
-### For Users
+The Counterfactual framework is designed build web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). For us just means that each user already has an established ledger channel with a server-like entity we call the Intermediary. Each user's browser wallet will contain a dedicated ethereum address that contains available funds for dapps hosted by a given Intermediary. In this Getting Started Guide, we'll use the Counterfactual Playground Server as our Intermediary; you can sign up for an account [here](https://playground.counterfactual.com/).
 
-Users install the Counterfactual MetaMask plugin, which creates an Ethereum account in MetaMask managed by the Counterfactual Node. Funds in this account are used to fund the individual channels that players choose to open in any specific Counterfactual app.
+When two users agree to install an instance of a dapp via the Playground, the Playground will allocate funds from their dedicated addresses into a virtual channel for the dapp instance.
+
+INSERT DIAGRAM FUNDVCHANN HERE
+
 
 ### For Developers
 
@@ -63,6 +65,12 @@ in three ways:
 4. Use the NodeProvider’s `.on()`  method to listen for accepted installs and updated state in the channel
 5. Use the AppInstance’s `.takeAction()` method to propose updates to state in the channel
 6. Use the AppInstance’s `.uninstall()` method to propose closing and resolving the channel
+
+
+
+
+To streamline the guide, we’ve built a bot to automatically accept requests to play High Roller; this means you only have to code the UI for the first player (the one who proposes to play the game).
+
 
 ----------
 
