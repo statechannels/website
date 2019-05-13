@@ -31,7 +31,7 @@ Developers will use the Counterfactual framework to implement the logic of virtu
 1. designate the **application logic** for the virtual channel
 1. design the **user interface** for the virtual channel
 
-The application logic for Counterfactual dapps are implemented by pure functions in a deployed Ethereum contract. Functionality handled includes answering the following questions:
+The application logic for a Counterfactual dapp is described in a deployed Ethereum contract. Functionality handled includes answering the following questions:
 
 1. Whose turn is it now?
 2. What are the possible actions a user can legally execute?
@@ -53,15 +53,16 @@ The UI and client logic for the game will be implemented in **HighRoller.js**. F
 ### In this Getting Start Guide, you’ll learn how to:
 
 1. Create a new Counterfactual project repo
-1. Create an `AppFactory` instance, which will specify the application logic
-1. Use the `AppFactory`'s `proposeInstallVirtual()` method to propose a new virtual state channel 
-1. Use a Counterfactual `NodeProvider`'s `.on()` method to listen for accepted installs and updated state in the virtual channel
-1. Use the `AppFactory`'s `takeAction()` method to propose updates to state in the virtual channel
-1. Use the `AppFactory`'s `uninstall()` method to propose closing and resolving the virtual channel
+1. Create an `AppFactory` instance, which will specify the application logic for **HighRoller**
+1. Use the `AppFactory`'s `proposeInstallVirtual()` method to propose a new virtual state channel when the user wants to play **HighRoller**
+1. Use the Counterfactual `NodeProvider`'s `on()` method to listen for the second player to accept the proposed virtual install
+1. Use the Counterfactual `NodeProvider`'s `on()` method to listen for updated state in the virtual channel
+1. Use the `AppFactory`'s `takeAction()` method to [update state](https://specs.counterfactual.com/en/latest/01-app-definition.html#progressing-state) in the virtual channel
+1. Use the `AppFactory`'s `uninstall()` method to close and resolve the virtual channel
 
+Along the way, we'll see how the Counterfactual framework ensures that state is updated safely and securely. 
 
-
-To streamline the guide, we’ve built a bot to automatically accept requests to play High Roller; this means you only have to code the UI for the first player (the one who proposes to play the game).
+One more thing: to streamline your first dapp, we've built and deployed a bot that will accept `proposeInstallVirtual()` requests for **HighRoller** and play the game with your user; this means you only have to code the UI for the first player.
 
 
 ----------
@@ -84,10 +85,9 @@ In the box, you'll find `src/app.js`. In this UI template, you'll find:
 * some initialized variables ( `let web3Provider, nodeProvider;` )
 * the async function `run()` which contains calls to
     * initWeb3() // initializes web3; already complete and explained inline
-    * initContract() // **this is where we point to the blockchain contract for our state channel** - we’ll explain and fill in the details during the guide
+    * initContract() // use Truffle to create a Contract object; enables dynamic fetching of the contract address and content
     * setupCF() // setup for the Counterfactual NodeProvider; already complete
-    * install() // **this is the game** - we’ll explain and fill this in
-        * The install function will call the rest of the functions in the doc
+    * install() // **this is the template we'll use for the application UI**
 * a call to the `run()` function
 
 ----------
