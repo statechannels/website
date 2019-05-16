@@ -28,12 +28,12 @@ To build the `AppInstance` for our game of HighRoller, we'll a **Counterfactual 
 
 The application logic for a Counterfactual app must include structures and methods that answer the questions:
 
-1. What does state look like? \\ `struct AppState`
-1. What does an action look like? \\ `struct Action`
-1. Whose turn is it now? \\ `function getTurnTaker()`
-1. How do actions update state, and who can apply which actions to what states? \\ `function applyAction()`
-1. When is the game over? \\ `function isStateTerminal()`
-1. What happens to the stake when the game is over? `function resolve()`
+1. What does state look like? -> `struct AppState`
+1. What does an action look like? -> `struct Action`
+1. Whose turn is it now? -> `function getTurnTaker()`
+1. How do actions update state, and who can apply which actions to what states? -> `function applyAction()`
+1. When is the game over? -> `function isStateTerminal()`
+1. What happens to the stake when the game is over? -> `function resolve()`
 
 Take a quick look at [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) to see how it addresses each of the questions. We'll also run through this together in the next [section](https://github.com/counterfactual/website/blob/joey-editing/server/docs/getting-started.md#a-quick-look-at-the-contract).
 
