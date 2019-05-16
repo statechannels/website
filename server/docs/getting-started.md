@@ -219,8 +219,8 @@ In the box, you'll find `src/app.js`, which we'll use as a starting point for de
 * some initialized variables ( `let web3Provider, nodeProvider;` )
 * the async function `run()` which contains calls to
     * initWeb3() // initializes web3; no need to touch this
-    * initContract() // use Truffle to create a Contract object, which enables dynamic fetching of the contract address and content
-    * setupCF() // setup for the Counterfactual NodeProvider; no need to touch this
+    * initContract() // use Truffle to create a TruffleContract object, which enables dynamic fetching of the contract address and content
+    * setupCF() // setup for the Counterfactual `NodeProvider`; no need to touch this
     * install() // this is where we start building the 
 * a call to the `run()` function
 
