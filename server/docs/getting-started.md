@@ -224,7 +224,7 @@ In the box, you'll find `src/app.js`, which we'll use as a starting point for de
     * install() // this is where we start building the 
 * a call to the `run()` function
 
-Throughout this guide, we'll be moving using this template as our reference for developing `app.js`.
+Throughout this guide, we'll be moving using this template as our reference for developing `HighRoller.js`.
 
 ----------
 
