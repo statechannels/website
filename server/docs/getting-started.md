@@ -6,7 +6,7 @@ Counterfactual is a web development framework that makes it easy to build dapps 
 
 State channels are useful for any dapp that relies on turn-based state updates between a fixed set of users that conditionally execute a transaction based on that state. For instance, a board game dapp where users take turns applying actions to the board until a winner emerges and is rewarded with some money.
 
-In this guide, we’ll build a simple game using the Counterfactual framework. The game is called High Roller: a dice game where two users stake ETH, roll two dice, and the one with the higher roll wins all of the staked money.
+In this guide, we’ll build a simple game using the Counterfactual framework. The game is High Roller: a dice game where two users stake ETH, roll two dice, and the one with the higher roll wins all of the staked money.
 
 ## How does Counterfactual work?
 
@@ -24,7 +24,7 @@ INSERT DIAGRAM-USER HERE
 
 At its core, Counterfactual is centered around a type of conditional transaction based on the outcome of an `AppInstance`; these applications can be installed, updated, and uninstalled between users with a shared hub. Each `AppInstance` install creates a new virtual state channel; uninstalling the `AppInstance` corresponds to closing the channel.
 
-To build the `AppInstance` for our game of HighRoller, we'll a **Counterfactual App Ethereum contract** that contains the application logic for HighRoller. Since this guide will focus on how to use Counterfactual to **interact** with virtual state channels, we've written and deployed [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) for you.
+To build the `AppInstance` for our game of High Roller, we'll a **Counterfactual App Ethereum contract** that contains the application logic for HighRoller. Since this guide will focus on how to use Counterfactual to **interact** with virtual state channels, we've written and deployed [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) for you.
 
 The application logic for a Counterfactual app must include structures and methods that answer the questions:
 
@@ -206,26 +206,25 @@ function highRoller(bytes32 randomness)
 
 ## Setting up the repo
 
-
-We’ll start our new Counterfactual project with the template in the Counterfactual Truffle box. After installing [Truffle](https://truffleframework.com/docs/truffle/getting-started/installation), and familiarizing yourself with how to [create a new Truffle project](https://truffleframework.com/docs/truffle/getting-started/creating-a-project), unbox the Counterfactual Truffle box:
+We have packaged all of the code for this getting started guide inside of a Truffle box; a tool for creating templates of Truffle-enabled projects which HighRoller is. After installing [Truffle](https://truffleframework.com/docs/truffle/getting-started/installation), and familiarizing yourself with how to [create a new Truffle project](https://truffleframework.com/docs/truffle/getting-started/creating-a-project), unbox the Counterfactual Truffle box:
 
 ```bash
-mkdir my-project
-cd my-project
+mkdir highroller-cf-app
+cd highroller-cf-app
 truffle unbox counterfactual/truffle-box
 ```
 
-In the box, you'll find `src/app.js`. In this UI template, you'll find: 
+In the box, you'll find `src/app.js`, which we'll use as a starting point for developing the High Roller web app user interface. In `app.js` you'll find:
 
 * some initialized variables ( `let web3Provider, nodeProvider;` )
 * the async function `run()` which contains calls to
     * initWeb3() // initializes web3; no need to touch this
     * initContract() // use Truffle to create a Contract object, which enables dynamic fetching of the contract address and content
     * setupCF() // setup for the Counterfactual NodeProvider; no need to touch this
-    * install() // **this is where we'll code the application UI**
+    * install() // this is where we start building the 
 * a call to the `run()` function
 
-Throughout this guide, we'll be using this template as a reference for developing `app.js`.
+Throughout this guide, we'll be moving using this template as our reference for developing `app.js`.
 
 ----------
 
