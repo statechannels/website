@@ -224,14 +224,13 @@ In the box, you'll find `src/app.js`, which we'll use as a starting point for de
     * install() // this is where we start building the 
 * a call to the `run()` function
 
-Throughout this guide, we'll be moving using this template as our reference for developing `HighRoller.js`.
+Throughout this guide, we'll be moving using `app.js` as our reference for developing `HighRoller.js`.
 
 ----------
 
 ## Constants
 
-We’ll import some [ethers.js](https://docs.ethers.io/ethers.js) [constants and utilities](https://docs.ethers.io/ethers.js/html/api-utils.html) we’ll need to write **HighRoller**:
-
+We're going to use a common ethereum utility library called [ethers.js](https://docs.ethers.io/ethers.js) for some parts of this app:
 * HashZero // the ethers.js bytes32 representation of zero
 * bigNumberify // returns Big Number types from input; we’ll use these because JavaScript is, by default, not able to handle big number representations accurately
 * parseEther // converts the string representation of Ether into BigNumber instance of the amount of Wei
