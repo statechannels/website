@@ -16,7 +16,7 @@ Users interact with Counterfactual dapps through their wallet-enabled web browse
 
 INSERT DIAGRAM-USER HERE
 
-Counterfactual is designed build web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). For us just means that each user already has an established ledger channel with a server-like entity we call the Intermediary. Each user's browser wallet will contain a dedicated ethereum address that contains available funds for dapps hosted by a given Intermediary. In this Getting Started Guide, we'll use the Counterfactual Playground Server as our Intermediary; you can sign up for an account [here](https://playground.counterfactual.com/).
+Counterfactual is designed to build web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). For us just means that each user already has an established ledger channel with a server-like entity we call the Intermediary. Each user's browser wallet will contain a dedicated ethereum address that contains available funds for dapps hosted by a given Intermediary. In this Getting Started Guide, we'll use the Counterfactual Playground Server as our Intermediary; you can sign up for an account [here](https://playground.counterfactual.com/).
 
 When two users agree to install an instance of a dapp via the Playground, the Playground will allocate funds from their dedicated addresses into a virtual channel for the dapp instance.
 
