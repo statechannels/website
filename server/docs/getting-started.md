@@ -10,44 +10,37 @@ In this guide, we’ll build a simple game using the Counterfactual framework. T
 
 ## How does Counterfactual work?
 
-### For Users
+### Counterfactual Implements Virtual Channels
 
-Users interact with Counterfactual dapps through their wallet-enabled web browser. In this Getting Started Guide, we'll be using  MetaMask and the Counterfactual MetaMask plugin. Check out the installation guide [here](https://github.com/counterfactual/monorepo/tree/master/packages/cf-metamask-extension).
+Counterfactual is designed to build state-channel web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). In the hub-and-spoke model, each user already has an established ledger channel (a spoke) with a server-like entity (the hub). Users with established ledger channels to a common hub can participate in [virtual state channels](https://medium.com/blockchannel/state-channel-for-dummies-part-4-f3ba9d76c7c4): by cleverly allocating funds in the ledger channels, the existing network of ledger channels can behave as a new state channel between the users with its own application logic.  In this guide, we'll use the Counterfactual framework to build a web app that implements High Roller in virtual state channels (with Playground Server as the hub).
+
+INSERT DIAGRAM VCHANN HERE
+
+Users interact with Counterfactual dapps through their wallet-enabled web browser. In this guide, we'll use MetaMask and the Counterfactual MetaMask plugin. Once you've installed the plugin, you should be able to see your Playground Server ledger channel balance in MetaMask. Check out the installation guide [here](https://github.com/counterfactual/monorepo/tree/master/packages/cf-metamask-extension).
 
 INSERT DIAGRAM-USER HERE
 
-Counterfactual is designed to build web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). For us just means that each user already has an established ledger channel with a server-like entity called the Hub. Each user's browser wallet will contain a dedicated ethereum address that contains available funds for dapps hosted by a given Hub. In this guide, we'll use the Counterfactual Playground Server as our hub. The Counterfactual Playground Server is a free testnet hub run by Counterfactual contributors; you can sign up for a Counterfactual Playground Server account [here](https://playground.counterfactual.com/), which will create the aforementioned ledger channel.
+### Virtual State Channels as AppInstance
 
-When two users agree to install an instance of a dapp via the Playground, the Playground will allocate funds from their dedicated addresses into a virtual channel for the dapp instance.
+At its core, Counterfactual is centered around a type of conditional transaction based on the outcome of an `AppInstance`; these applications can be installed, updated, and uninstalled between users with a shared hub. Each `AppInstance` install creates a new virtual state channel; uninstalling the `AppInstance` corresponds to closing the channel.
 
-INSERT DIAGRAM FUNDVCHANN HERE
+To build the `AppInstance` for our game of HighRoller, we'll a **Counterfactual App Ethereum contract** that contains the application logic for HighRoller. Since this guide will focus on how to use Counterfactual to **interact** with virtual state channels, we've written and deployed [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) for you.
 
+The application logic for a Counterfactual app must include structures and methods that answer the questions:
 
-### For Developers
+1. What does state look like? \\ `struct AppState`
+1. What does an action look like? \\ `struct Action`
+1. Whose turn is it now? \\ `function getTurnTaker()`
+1. How do actions update state, and who can apply which actions to what states? \\ `function applyAction()`
+1. When is the game over? \\ `function isStateTerminal()`
+1. What happens to the stake when the game is over? `function resolve()`
 
-
-Developers will use the Counterfactual framework to implement the logic of virtual state channels. In this Getting Started Guide, you'll learn how to 
-
-1. designate the **application logic** for the virtual channel
-1. design the **user interface** for the virtual channel
-
-The application logic for a Counterfactual dapp is described in a deployed Ethereum contract. Functionality handled includes answering the following questions:
-
-1. Whose turn is it now?
-2. What are the possible actions a user can legally execute?
-3. When is the game over?
-4. What happens to the stake when the game is over?
-
-In this guide, we've provided you with a deployed contract, [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol), to use for your dapp. Take a quick look at **HighRoller.sol** and see if you can find how it answers questions 1-4. We'll also run through this together in the next [section](https://github.com/counterfactual/website/blob/joey-editing/server/docs/getting-started.md#a-quick-look-at-the-contract).
+Take a quick look at [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) to see how it addresses each of the questions. We'll also run through this together in the next [section](https://github.com/counterfactual/website/blob/joey-editing/server/docs/getting-started.md#a-quick-look-at-the-contract).
 
 
-The UI and client logic for the game will be implemented in **app.js**. Functionality handled includes:
+### Counterfactual Interface for Virtual State Channels 
 
-1. Proposing a game to another user
-2. Accepting a proposal from another user
-3. Taking an action when it is your turn
-4. Listening for other players to take their turns
-5. Leaving a game when it’s over
+To build the UI for our game of HighRoller, we'll use the Counterfactual framework's client library to build the `AppInstance` object and to interact with it using its own methods and through a Counterfactual `Provider` object.
 
 
 ### In this Getting Start Guide, you’ll learn how to:
@@ -55,8 +48,8 @@ The UI and client logic for the game will be implemented in **app.js**. Function
 1. Create a new Counterfactual project repo
 1. Create an `AppFactory` instance, which will specify the application logic for **HighRoller**
 1. Use the `AppFactory`'s method `proposeInstallVirtual()` to propose a new virtual state channel when the user wants to play **HighRoller**
-1. Use the Counterfactual `NodeProvider`'s method `on()` to listen for the second player to accept the proposed virtual install
-1. Use the Counterfactual `NodeProvider`'s method `on()` to listen for updated state in the virtual channel
+1. Use the Counterfactual `Provider`'s method `on()` to listen for the second player to accept the proposed virtual install
+1. Use the Counterfactual `Provider`'s method `on()` to listen for updated state in the virtual channel
 1. Use the `AppInstance`'s `takeAction()` method to [update state](https://specs.counterfactual.com/en/latest/01-app-definition.html#progressing-state) in the virtual channel
 1. Use the `AppInstance`'s `uninstall()` method to close and resolve the virtual channel
 
@@ -211,7 +204,7 @@ function highRoller(bytes32 randomness)
 ----------
 
 
-## Counterfactual's Truffle box
+## Setting up the repo
 
 
 We’ll start our new Counterfactual project with the template in the Counterfactual Truffle box. After installing [Truffle](https://truffleframework.com/docs/truffle/getting-started/installation), and familiarizing yourself with how to [create a new Truffle project](https://truffleframework.com/docs/truffle/getting-started/creating-a-project), unbox the Counterfactual Truffle box:
