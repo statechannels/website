@@ -40,19 +40,20 @@ Take a look at [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/
 
 ### Counterfactual Interface for Virtual State Channels 
 
-We'll use the Counterfactual framework's client library to build the `AppInstance` object and interact with it using a Counterfactual `Provider` instance. 
+In this Getting Started Guide, we'll be building a web app that implements a game of **High Roller** as a Counterfactual `AppInstance`. 
+
+Each `AppInstance` is created by a Counterfactual `AppFactory` object. The `AppFactory` specifies the underlying application logic for the `AppInstance`, and which Counterfactual `Provider` object can listen in the channel. 
 
 By following along with this Getting Started Guide, you'll learn how to:
 
 1. Create a new Counterfactual project repo
 1. Create an `AppFactory` instance, which will specify the application logic for **HighRoller**
-1. Use the `AppFactory`'s method `proposeInstallVirtual()` to propose a new `AppInstance` to start a game of **HighRoller**
+1. Use the `AppFactory`'s method `proposeInstallVirtual()` to propose a new `AppInstance` for our game of **HighRoller**
 1. Use the Counterfactual `Provider`'s method `on()` to listen for the second player to accept the proposal
 1. Use the Counterfactual `Provider`'s method `on()` to listen for updated state in the virtual channel
 1. Use the `AppInstance`'s `takeAction()` method to [progress state](https://specs.counterfactual.com/en/latest/01-app-definition.html#progressing-state) in the virtual channel
-1. Use the `AppInstance`'s `uninstall()` method to uninstall and resolve the `AppInstance`
+1. Use the `AppInstance`'s `uninstall()` method to uninstall and resolve the financial stakes
 
-Along the way, we'll see how the Counterfactual framework ensures that state is updated safely and securely. 
 
 One more thing: to streamline development of your first dapp, we've built and deployed a bot that will accept installs and play **HighRoller**. This means we only have to code the game interface for the first player of **HighRoller**.
 
@@ -216,13 +217,18 @@ In the box, you'll find `src/app.js`, which we'll use as a starting point for de
 
 * some initialized variables ( `let web3Provider, nodeProvider;` )
 * the async function `run()` which contains calls to
-    * initWeb3() // initializes web3; no need to touch this
-    * initContract() // use Truffle to create a TruffleContract object, which enables dynamic fetching of the contract address and content
-    * setupCF() // setup for the Counterfactual `NodeProvider`; no need to touch this
-    * install() // this is where we start building the 
+    * initWeb3() -> initializes Web3
+    * initContract() -> use Truffle to create a TruffleContract object; used for dynamic fetching of contract address and content
+    * setupCF() -> setup for the Counterfactual `NodeProvider`
+    * install() 
 * a call to the `run()` function
 
-Throughout this guide, we'll be moving using `app.js` as our reference for developing `HighRoller.js`.
+Throughout this guide, we'll be using `app.js` as our reference for developing `HighRoller.js`.
+
+
+----------
+
+## 
 
 ----------
 
