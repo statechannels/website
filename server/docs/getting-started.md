@@ -12,7 +12,7 @@ In this guide, we’ll build a simple game using the Counterfactual framework. T
 
 ### Counterfactual Implements Virtual Channels
 
-Counterfactual is designed to build state-channel web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). In the hub-and-spoke model, each user already has an established ledger channel (a spoke) with a server-like entity (the hub). Users with established ledger channels to a common hub can participate in [virtual state channels](https://medium.com/blockchannel/state-channel-for-dummies-part-4-f3ba9d76c7c4): by cleverly allocating funds in the ledger channels, the existing network of ledger channels can behave as a new state channel between the users with its own application logic.  In this guide, we'll use the Counterfactual framework to build a web app that implements High Roller in virtual state channels (with Playground Server as the hub).
+Counterfactual is designed to build state-channel web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). In the hub-and-spoke model, each user already has an established ledger channel (a spoke) with a server-like entity (the hub). Users with established ledger channels to a common hub can participate in [virtual state channels](https://medium.com/blockchannel/state-channel-for-dummies-part-4-f3ba9d76c7c4): by cleverly allocating funds in the ledger channels, the users can enter into agreements that behave like a new state channel its own application logic.  In this guide, we'll use the Counterfactual framework to build a web app that implements a game of High Roller in virtual state channels (with Playground Server as the hub).
 
 INSERT DIAGRAM VCHANN HERE
 
@@ -22,9 +22,9 @@ INSERT DIAGRAM-USER HERE
 
 ### Virtual State Channels as AppInstance
 
-At its core, Counterfactual is centered around a type of conditional transaction based on the outcome of an `AppInstance`; these applications can be installed, updated, and uninstalled between users with a shared hub. Each `AppInstance` install creates a new virtual state channel; uninstalling the `AppInstance` corresponds to closing the channel.
+At its core, Counterfactual is centered around a type of conditional transaction based on the outcome of an `AppInstance`; these applications can be installed, updated, and uninstalled between users with a shared hub. Each `AppInstance` install creates a new virtual state channel; uninstalling the `AppInstance` corresponds to closing the virtual channel.
 
-To build the `AppInstance` for our game of High Roller, we'll a **Counterfactual App Ethereum contract** that contains the application logic for HighRoller. Since this guide will focus on how to use Counterfactual to **interact** with virtual state channels, we've written and deployed [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) for you.
+To build the `AppInstance` for our game of High Roller, we'll a **Counterfactual App Ethereum contract** that contains the application logic for HighRoller. This guide will focus on how to use Counterfactual to **install, update state in, and uninstall** virtual state channels, so we've written and deployed [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) for you.
 
 The application logic for a Counterfactual app must include structures and methods that answer the questions:
 
@@ -35,28 +35,26 @@ The application logic for a Counterfactual app must include structures and metho
 1. When is the game over? -> `function isStateTerminal()`
 1. What happens to the stake when the game is over? -> `function resolve()`
 
-Take a quick look at [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) to see how it addresses each of the questions. We'll also run through this together in the next [section](https://github.com/counterfactual/website/blob/joey-editing/server/docs/getting-started.md#a-quick-look-at-the-contract).
+Take a look at [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) to see how it addresses each of the questions. We'll also run through this together in the next [section](https://github.com/counterfactual/website/blob/joey-editing/server/docs/getting-started.md#a-quick-look-at-the-contract).
 
 
 ### Counterfactual Interface for Virtual State Channels 
 
-To build the UI for our game of HighRoller, we'll use the Counterfactual framework's client library to build the `AppInstance` object and to interact with it using its own methods and through a Counterfactual `Provider` object.
+We'll use the Counterfactual framework's client library to build the `AppInstance` object and interact with it using a Counterfactual `Provider` instance. 
 
-
-### In this Getting Start Guide, you’ll learn how to:
+By following along with this Getting Started Guide, you'll learn how to:
 
 1. Create a new Counterfactual project repo
 1. Create an `AppFactory` instance, which will specify the application logic for **HighRoller**
-1. Use the `AppFactory`'s method `proposeInstallVirtual()` to propose a new virtual state channel when the user wants to play **HighRoller**
-1. Use the Counterfactual `Provider`'s method `on()` to listen for the second player to accept the proposed virtual install
+1. Use the `AppFactory`'s method `proposeInstallVirtual()` to propose a new `AppInstance` to start a game of **HighRoller**
+1. Use the Counterfactual `Provider`'s method `on()` to listen for the second player to accept the proposal
 1. Use the Counterfactual `Provider`'s method `on()` to listen for updated state in the virtual channel
-1. Use the `AppInstance`'s `takeAction()` method to [update state](https://specs.counterfactual.com/en/latest/01-app-definition.html#progressing-state) in the virtual channel
-1. Use the `AppInstance`'s `uninstall()` method to close and resolve the virtual channel
+1. Use the `AppInstance`'s `takeAction()` method to [progress state](https://specs.counterfactual.com/en/latest/01-app-definition.html#progressing-state) in the virtual channel
+1. Use the `AppInstance`'s `uninstall()` method to uninstall and resolve the `AppInstance`
 
 Along the way, we'll see how the Counterfactual framework ensures that state is updated safely and securely. 
 
-One more thing: to streamline your first dapp, we've built and deployed a bot that will accept `proposeInstallVirtual()` requests for **HighRoller** and play the game with your user. This means you only have to code the UI for the first player of **HighRoller**.
-
+One more thing: to streamline development of your first dapp, we've built and deployed a bot that will accept installs and play **HighRoller**. This means we only have to code the game interface for the first player of **HighRoller**.
 
 
 ---------
