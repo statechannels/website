@@ -228,76 +228,9 @@ Throughout this guide, we'll be using `app.js` as our reference for developing `
 
 ----------
 
-## 
-
-----------
-
-## Constants
-
-We're going to use a common ethereum utility library called [ethers.js](https://docs.ethers.io/ethers.js) for some parts of this app:
-* HashZero // the ethers.js bytes32 representation of zero
-* bigNumberify // returns Big Number types from input; we’ll use these because JavaScript is, by default, not able to handle big number representations accurately
-* parseEther // converts the string representation of Ether into BigNumber instance of the amount of Wei
-* solidityKeccak256 // solidity hash function
-* fromExtendedKey // creates an ethereum wallet-like object, [HDNode](https://docs.ethers.io/ethers.js/html/api-advanced.html) from an extended private or public key
-
-Let's import them at the top of `app.js`:
-
-```typescript
-const { HashZero } = ethers.constants;
-const { bigNumberify, parseEther, solidityKeccak256 } = ethers.utils;
-const { fromExtendedKey } = ethers.utils.HDNode;
-
-const contractAddress = '0x91907355C59BA005843E791c88aAB80b779446c9';
-
-let web3Provider, nodeProvider;
-
-async function run() {
-
-  await initWeb3();
-  await initContract();
-  await setupCF();
-  await install();
-}
-```
-
-
-----------
-
-## initWeb3()
-
-Here's what you'll find in `initWeb3()`, and there's no need to change any of it.
-
-```typescript
-async function initWeb3() {
-  // Modern dapp browsers...
-  if (window.ethereum) {
-    web3Provider = window.ethereum;
-    try {
-      // Request account access
-      await window.ethereum.enable();
-    } catch (error) {
-      // User denied account access...
-      console.error("User denied account access")
-    }
-  }
-  // Legacy dapp browsers...
-  else if (window.web3) {
-    web3Provider = window.web3.currentProvider;
-  }
-  // If no injected web3 instance is detected, fall back to Ganache
-  else {
-    web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
-  }
-  web3 = new Web3(web3Provider);
-}
-```
-
-----------
-
 ## initContract()
 
-This is where you'll create a TruffleContract object corresponding to the **HighRoller.sol** solidity contract. When developing your own apps, you'll use Truffle to point to your contract as you develop it. Let's fill some of the details in now.
+This is where you'll create a `TruffleContract` object corresponding to the **HighRoller.sol** contract. When developing your own apps, you'll use Truffle to point to your contract as you develop it, so it's a good idea to get the hang of it now. Change the variable names in the template so it reads:
 
 ```typescript
 async function initContract() {
@@ -312,44 +245,20 @@ async function initContract() {
 
 ----------
 
-## setupCF()
 
-Here's what you'll find in `setupCF()`, and there's no need to change any of it. 
+## Counterfactual's Provider and AppFactory Objects
 
-```typescript
-async function setupCF() {
-  nodeProvider = new cf.NodeProvider();
-  await nodeProvider.connect();
-}
-```
+We've described how the Counterfactual framework depends on `AppInstance`s. Every `AppInstance` is created by an `AppFactory` instance. An `AppFactory` is just what it sounds like: an object designed to produce `AppInstances` of a certain type. In this section, we'll create an `AppFactory` that produces `AppInstances` with underlying logic given by **HighRoller.sol**. 
 
-----------
+The `AppFactory` also specifies which Counterfactual `Provider` object can listen for state updates in the `AppInstances` it creates, and it specifies the encoding (TO DO: say a few words about encoding). 
 
 
-## The install() Function
+### The install() function
 
-This is where we begin developing **HighRoller**.
-
-### Counterfactual's Provider and AppFactory Objects
-
-The `install()` function will
-* reset game state
-* instantiate a Counterfactual `Provider`
-* instantiate a Counterfactual `AppFactory` instance.
-
-The `Provider` is our tool for listening and responding to state changes in a virtual channel: it only needs to be given the `nodeProvider`.
-
-The `AppFactory` is how we create new virtual channels, and it needs to know:
-  * the address of the contract which provides the application logic (**HighRoller.sol**)
-  * the encodings for the application state and actions (to maintain the privacy of state and actions)
-  * which `Provider` can listen and propose updates to state.
-
-We'll input the contract address for **HighRoller.sol**, and fill in the details of the `Action` and `AppState` data types for the encodings.
+Let's instantiate a Counterfactual `Provider` and `AppFactory` instance.
 
 ```typescript
 async function install() {
-  resetGameState();
-  
   const contractAddress = '0x91907355C59BA005843E791c88aAB80b779446c9';
   const actionEncoding = 'tuple(uint8 actionType, uint256 number, bytes32 actionHash)';
   const stateEncoding = 'tuple(address[2] playerAddrs, uint8 stage, bytes32 salt, bytes32 commitHash, uint256 playerFirstNumber, uint256 playerSecondNumber)'
@@ -362,18 +271,12 @@ async function install() {
 }
 ```
 
-We’ll come back to define the function `resetGameState()` once we have a better sense of what that will entail.
 
-### The AppFactory's proposeVirtualInstall Method
+### Creating an AppInstance
 
-The `install()` function will also call `proposeInstall(appFactory)`. This function is where we will implement `appFactory`'s `proposeInstallVirtual()` method, which will propose creating a virtual state channel with underlying application logic specified in `appFactory`'s instantiation. To propose the new virtual channel, we'll need to specify:
-  * initial state for the channel
-  * who is participating in the channel
-  * what are the stakes (and in what currency)
-  * how long before timeout
-  * the intermediary
+Now that we've got our `AppFactory` object, we'll want to create an `AppInstance`. The only way to create an `AppInstance` is to have the `AppFactory` propose a virtual install to the other participants; if they accept, we'll have successfully created our `AppInstance`. 
 
-By looking at the application logic, we expect the initial game state to begin with the `playerAddrs` set and `state.STAGE` set to `Stage.PRE_GAME`. In order to obtain the addresses, we include a couple of address-collecting utility functions
+Before we actually propose a game, we'll need to be able to get user data from the Counterfactual Playground Server, so let's include the following functions:
 
 ```typescript
 async function getUserData() {
@@ -439,7 +342,18 @@ async function run() {
 
 ```
 
-Now we're ready to describe the `initialState` and call the `proposeVirtualInstall()` method:
+Now we're ready to `proposeVirtualInstall()`.
+
+
+----------
+
+When proposing a virtual install to another player, we'll need to specify:
+  * initial state for the channel
+  * who is participating in the channel
+  * what are the stakes for each player (and in what currency)
+  * a timeout variable
+  * which intermediary we'll be using.
+  
 
 
 ```typescript
@@ -494,13 +408,10 @@ async function proposeInstall(appFactory) {
 
 ### The Provider's on() Method
 
-The `install()` function is also where we instruct the cfProvider to **listen** in the channel for
-
-- successful `proposeInstallVirtual()`
-- changes in state in the channel
-
+The `install()` function is also where we instruct the `Provider` to **listen** in the channel for
+  * a successful `proposeInstallVirtual()`
+  * any changes to state in the virtual channel
 and to react to those changes via the `Provider` method `on()`. 
-
 
 ```typescript
     async function install() {
