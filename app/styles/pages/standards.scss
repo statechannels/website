@@ -1,0 +1,54 @@
+.statechannels {
+  &__heading {
+    @include f-heading;
+    margin-bottom: 0.25rem;
+    font-weight: normal;
+    color: $c-blue;
+  }
+
+  .date {
+    margin-top: 1rem;
+    color: $c-black;
+
+    span {
+      color: $c-blue;
+    }
+  }
+
+  &__abstract {
+    @include f-base;
+    margin: 1.5rem 0 0;
+    font-weight: 400;
+    color: $c-black;
+  }
+
+}
+
+.signed {
+  max-width: 50rem;
+  margin: 0 auto;
+
+  &__heading {
+    text-align: center;
+  }
+
+  &__logos {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+
+    a {
+      display: block;
+      margin: 2rem 1rem 1rem;
+      min-width: 8rem;
+      max-width: calc(100% / 5 - 2rem);
+
+      img {
+        display: block;
+        max-height: 100%;
+        margin: 0 auto;
+      }
+    }
+  }
+}
