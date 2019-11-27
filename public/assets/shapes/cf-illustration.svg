@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="397px" height="728px" viewBox="0 0 397 728" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs></defs>
+    <g id="UI" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.310384115" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Home" transform="translate(-1043.000000, -99.000000)" stroke="#2728E2">
+            <g id="Illustration" transform="translate(1044.000000, 100.000000)">
+                <polygon id="Path-5" points="0 356.145372 285.758516 507 560 351.518761 449.755414 160.923425 328.135856 115.227759 405.388333 83.2270267 376.894251 33.650762 278.32669 0 184.893138 33.650762 77.4534744 221.275427 137.965274 249.586848 35.5993672 294.414493"></polygon>
+                <polyline id="Path-6" points="51.1062807 384 5 404.514347 198.611446 673.434186 278.573654 726 361.191461 676.303897 415.773627 602.70432 351.947262 565.888239 507.576649 478.188668 557 410.566864 503.59014 384.626338"></polyline>
+                <polyline id="Path-7" points="5 404 274.419033 564 556 410.109059"></polyline>
+                <polyline id="Path-8" points="415 604.636988 278.676642 686 209.642145 642.001029 129 520 275.836473 609.427293 352.241465 566.614723"></polyline>
+                <path d="M279.5,686 L279.5,726" id="Path-9"></path>
+                <path d="M275,564 L276,608" id="Path-10"></path>
+                <path d="M283,237 L285,508" id="Path-11"></path>
+                <path d="M450,161 L283,237" id="Path-12"></path>
+                <polyline id="Path-13" points="283 237 154 182.735632 193.104414 100.13724 280.542944 133.514147 281.203742 70.0428549 184.067091 35"></polyline>
+                <path d="M154,183 L327,116" id="Path-14"></path>
+                <polyline id="Path-15" points="137.761711 250 235 294.203491 230.678067 393 35 295.074112"></polyline>
+                <path d="M209,641 L269.5,606.5" id="Path-16"></path>
+                <path d="M282,71 L377,34" id="Path-2"></path>
+            </g>
+        </g>
+    </g>
+</svg>
