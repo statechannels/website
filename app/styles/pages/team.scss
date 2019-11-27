@@ -1,6 +1,6 @@
 .team-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   grid-column-gap: 0;
 
   &__item {
@@ -25,6 +25,11 @@
     &__logos {
       display: flex;
       justify-content: space-around;
+
+      a {
+        display: block;
+        margin-bottom: 2rem;
+      }
 
       > * {
         display: block;
@@ -90,8 +95,12 @@
   .team-content {
     margin-top: 2rem;
 
+    > * + * {
+      margin-top: 2rem;
+    }
+
     &__item {
-      grid-column: span 2;
+      grid-column: span 3;
       padding: 0;
     }
   }
