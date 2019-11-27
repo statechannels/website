@@ -34,7 +34,6 @@ $transition-speed: 200ms;
 @import url('https://fonts.googleapis.com/css?family=Chivo:300,400');
 @import 'box-sizing';
 @import 'resets';
-@import 'animations';
 @import 'typography';
 @import 'layout';
 
@@ -47,7 +46,6 @@ $transition-speed: 200ms;
 @import 'components/footer';
 @import 'components/buttons';
 
-@import 'pages/technology';
 @import 'pages/team';
 @import 'pages/standards';
 
