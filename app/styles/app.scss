@@ -1,7 +1,7 @@
 // Colors
-$c-black: #101010;
+$c-black: #323131;
 $c-white: #fff;
-$c-blue: #2f80ed;
+$c-blue: #3531ff;
 $c-darkgrey: #707070;
 $c-lightgrey: #e6e6e6;
 $c-editor-bg: #f7f9fa;
@@ -34,7 +34,6 @@ $transition-speed: 200ms;
 @import url('https://fonts.googleapis.com/css?family=Chivo:300,400');
 @import 'box-sizing';
 @import 'resets';
-@import 'animations';
 @import 'typography';
 @import 'layout';
 
@@ -47,9 +46,8 @@ $transition-speed: 200ms;
 @import 'components/footer';
 @import 'components/buttons';
 
-@import 'pages/technology';
 @import 'pages/team';
-@import 'pages/statechannels';
+@import 'pages/standards';
 
 @import 'markdown';
 

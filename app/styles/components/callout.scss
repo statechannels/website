@@ -15,6 +15,7 @@
   right: 0;
   transform: translateY(-50%);
   z-index: -1;
+  max-height: 100%;
 }
 
 .callout {
@@ -23,6 +24,7 @@
   width: 100%;
   transform: translateY(-50%);
   z-index: 1;
+  color: $c-blue;
 
   &__content {
     max-width: 50rem;

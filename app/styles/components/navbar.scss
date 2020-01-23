@@ -1,5 +1,5 @@
 .section--nav {
-  padding: 0 1rem 0 0;
+  padding: 1rem;
 }
 
 
@@ -10,7 +10,7 @@
 
   &__left {
     margin: 0;
-    width: 6.25rem;
+    width: 15rem;
 
     > a {
       display: block;
@@ -70,9 +70,5 @@
 @media screen and (max-width: $screen-mobile) {
   .section--nav {
     padding-right: 1.25rem;
-  }
-
-  .nav__left {
-    max-width: 4.5rem;
   }
 }
