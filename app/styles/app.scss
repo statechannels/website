@@ -59,22 +59,3 @@ $transition-speed: 200ms;
   flex-direction: column;
   flex-grow: 1;
 }
-
-
-// Initial tech graphic loading state
-.graphic1Load {
-  animation: graphic1 4s;
-  animation-fill-mode: forwards;
-}
-
-.graphic3Load {
-  animation: graphic3 4s;
-  animation-fill-mode: forwards;
-}
-
-@media screen and (max-width: $screen-md) {
-  .graphic1Load,
-  .graphic3Load {
-    animation: initial;
-  }
-}
