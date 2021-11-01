@@ -65,6 +65,8 @@
 
     &__item {
       margin-left: 0;
+      line-height: 30px;
+      padding: 15px;
       font-size: 1.125rem;
       color: $c-black;
       cursor: pointer;
@@ -91,6 +93,7 @@
       }
     }
   }
+
 }
 
 
