@@ -6,7 +6,7 @@
 .nav {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 
   &__left {
     margin: 0;
@@ -59,12 +59,18 @@
   }
 
   &__dropdown {
-    float: right;
+
+    &__list {
+      margin-top:8px;
+      position:relative;
+      text-align:right;
+      list-style:none;
+
+    }
 
     &__item {
-
+      position:inherit;
       line-height: 30px;
-      padding: 15px;
       font-size: 1.125rem;
       color: $c-black;
       cursor: pointer;
