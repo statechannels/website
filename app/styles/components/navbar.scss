@@ -57,6 +57,40 @@
       }
     }
   }
+
+  &__dropdown {
+    display: flex;
+    justify-content: flex-end;
+    flex-basis: calc(100% - 6.25rem);
+
+    &__item {
+      margin-left: 0;
+      font-size: 1.125rem;
+      color: $c-black;
+      cursor: pointer;
+      transition: color $transition-speed;
+
+      &:hover {
+        color: $c-blue;
+      }
+
+      &.active {
+        position: relative;
+        color: $c-blue;
+
+        &::before {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          bottom: -0.5rem;
+          width: 65%;
+          height: 1px;
+          background-color: $c-blue;
+          content: '';
+        }
+      }
+    }
+  }
 }
 
 
