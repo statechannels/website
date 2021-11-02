@@ -67,19 +67,11 @@
       text-align:right;
       list-style:none;
       display:none;
-
     }
 
-    &__list li{
-      position: relative;
-      width: 100%;
-      text-align: center;
+    &:hover &__list{
+      display:block;
     }
-    &__list li:hover &__item > li{
-      display: block;
-      top: 0;
-    }
-
 
     &__item {
       position:inherit;
