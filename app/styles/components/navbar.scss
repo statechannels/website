@@ -63,18 +63,27 @@
     &__list {
       margin-top:8px;
       margin-bottom:8px;
-      position:relative;
+      position:absolute;
       text-align:right;
       list-style:none;
-      display:none;
+      display:flex;
+      flex-direction: column;
     }
 
-    &:hover &__list{
+    &__list li {
+      position:absolute;
+      display:none;
+      top:0px
+    }
+
+    &:hover &__list>li{
       display:block;
+      flex-direction:column;
+      top:0px;
     }
 
     &__item {
-      position:inherit;
+      position:relative;
       line-height: 30px;
       font-size: 1.125rem;
       color: $c-black;
