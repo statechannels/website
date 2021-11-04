@@ -73,17 +73,6 @@
   }
 }
 
-.hosted-by {
-  display: flex;
-  align-items: center;
-  margin-top: 1rem;
-
-  span {
-    display: inline-block;
-    margin-right: 0.5rem;
-  }
-}
-
 
 @media screen and (max-width: $screen-md) {
   .section--footer {
@@ -122,7 +111,4 @@
     display: none;
   }
 
-  .hosted-by {
-    justify-content: center;
-  }
 }
