@@ -1,5 +1,6 @@
 .section--nav {
   padding: 1rem;
+  z-index:100;
 }
 
 
@@ -61,26 +62,24 @@
   &__dropdown {
 
     &__list {
-      margin-top:8px;
-      margin-bottom:8px;
+      padding-top:8px;
+      margin:0;
+      padding-bottom:8px;
       position:absolute;
       text-align:right;
       list-style:none;
       display:flex;
       flex-direction: column;
       padding-left:4.121rem;
+
     }
 
-    &__list li {
-
+    &__list {
       display:none;
-      top:0px
     }
 
-    &:hover &__list>li{
+    &:hover &__list, &__list:hover{
       display:block;
-      flex-direction:column;
-      top:0px;
     }
 
     &__item {
@@ -93,6 +92,7 @@
 
       &:hover {
         color: $c-blue;
+        display: block;
       }
 
       &.active {
@@ -119,6 +119,7 @@
 @media screen and (max-width: $screen-tablet) {
   .section--nav {
     padding-right: 2rem;
+    //z-index:100;
   }
 }
 
@@ -126,5 +127,6 @@
 @media screen and (max-width: $screen-mobile) {
   .section--nav {
     padding-right: 1.25rem;
+    //z-index:100;
   }
 }

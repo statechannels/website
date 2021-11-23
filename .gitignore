@@ -3,3 +3,7 @@ bower_components
 tmp
 dist
 .env
+public/index.html.bak
+public/index_chinese/index.html.bak
+public/standards/index.html.bak
+public/team/index.html.bak
