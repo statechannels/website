@@ -1,12 +1,13 @@
 .section--nav {
   padding: 1rem;
+  z-index:100;
 }
 
 
 .nav {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 
   &__left {
     margin: 0;
@@ -57,12 +58,68 @@
       }
     }
   }
+
+  &__dropdown {
+
+    &__list {
+      padding-top:8px;
+      margin:0;
+      padding-bottom:8px;
+      position:absolute;
+      text-align:right;
+      list-style:none;
+      display:flex;
+      flex-direction: column;
+      padding-left:4.121rem;
+
+    }
+
+    &__list {
+      display:none;
+    }
+
+    &:hover &__list, &__list:hover{
+      display:block;
+    }
+
+    &__item {
+      position:relative;
+      line-height: 30px;
+      font-size: 1.125rem;
+      color: $c-black;
+      cursor: pointer;
+      transition: color $transition-speed;
+
+      &:hover {
+        color: $c-blue;
+        display: block;
+      }
+
+      &.active {
+        position: relative;
+        color: $c-blue;
+
+        &::before {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          bottom: -0.5rem;
+          width: 65%;
+          height: 1px;
+          background-color: $c-blue;
+          content: '';
+        }
+      }
+    }
+  }
+
 }
 
 
 @media screen and (max-width: $screen-tablet) {
   .section--nav {
     padding-right: 2rem;
+    //z-index:100;
   }
 }
 
@@ -70,5 +127,6 @@
 @media screen and (max-width: $screen-mobile) {
   .section--nav {
     padding-right: 1.25rem;
+    //z-index:100;
   }
 }
