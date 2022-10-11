@@ -11,8 +11,8 @@
     "lint:js": "eslint src && eslint tests",
     "lint:js-fix": "eslint src --fix && eslint tests --fix",
     "deploy": "ember build -e production && cp dist/index.html dist/200.html && surge dist counterfactual.byjohnmichael.com",
-    "pretier:write": "yarn prettier --write .",
-    "prettier:check": "yarn prettier ."
+    "prettier:write": "yarn prettier --write .",
+    "prettier:check": "yarn prettier --check ."
   },
   "author": "",
   "license": "ISC",
