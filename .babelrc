@@ -1,13 +1,14 @@
 {
   "presets": [
-    ["env", {
-      "targets": {
-        "browsers": ["last 2 versions", "safari >= 7"]
-      },
-      "modules": false
-    }]
+    [
+      "env",
+      {
+        "targets": {
+          "browsers": ["last 2 versions", "safari >= 7"]
+        },
+        "modules": false
+      }
+    ]
   ],
-  "plugins": [
-    "transform-object-rest-spread"
-  ]
+  "plugins": ["transform-object-rest-spread"]
 }

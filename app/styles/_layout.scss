@@ -3,7 +3,8 @@
   flex-direction: column;
   min-height: 100vh;
 
-  &__content { // enables sticky footer
+  &__content {
+    // enables sticky footer
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -31,7 +32,6 @@
     position: relative;
   }
 }
-
 
 @media screen and (max-width: $screen-tablet) {
   .section--lg {

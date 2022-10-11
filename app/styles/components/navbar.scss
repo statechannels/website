@@ -2,7 +2,6 @@
   padding: 1rem;
 }
 
-
 .nav {
   display: flex;
   justify-content: space-between;
@@ -52,20 +51,18 @@
           width: 65%;
           height: 1px;
           background-color: $c-blue;
-          content: '';
+          content: "";
         }
       }
     }
   }
 }
 
-
 @media screen and (max-width: $screen-tablet) {
   .section--nav {
     padding-right: 2rem;
   }
 }
-
 
 @media screen and (max-width: $screen-mobile) {
   .section--nav {
