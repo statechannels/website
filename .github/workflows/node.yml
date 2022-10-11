@@ -1,0 +1,19 @@
+name: Node
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - name: Install dependencies
+        run: yarn install
+      - name: Lint
+        run: yarn lint:js
+      - name: check formatting
+        run: yarn prettier:check
