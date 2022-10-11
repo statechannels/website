@@ -7,14 +7,13 @@ options:
   merge-default-rules: true
 # File Options
 files:
-  include: 'app/styles/**/*.scss'
+  include: "app/styles/**/*.scss"
 # Rule Configuration
 rules:
   # Class names should follow BEM
   class-name-format:
     - 1
-    -
-      convention: hyphenatedbem
+    - convention: hyphenatedbem
   # No styling id selectors
   no-ids: 2
   # No !important rule
@@ -22,19 +21,15 @@ rules:
   # Hex values should be lowercase for color picker
   hex-notation:
     - 1
-    -
-      style: lowercase
+    - style: lowercase
   leading-zero:
     - 1
-    -
-      include: true
+    - include: true
   # Indent by two
   indentation:
     - 1
-    -
-      size: 2
+    - size: 2
   # Properties should be Box, Border, Background, Text, Other
   property-sort-order:
     - 1
-    -
-      order: smacss
+    - order: smacss

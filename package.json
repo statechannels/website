@@ -10,7 +10,9 @@
     "lint:sass": "sass-lint",
     "lint:js": "eslint src && eslint tests",
     "lint:js-fix": "eslint src --fix && eslint tests --fix",
-    "deploy": "ember build -e production && cp dist/index.html dist/200.html && surge dist counterfactual.byjohnmichael.com"
+    "deploy": "ember build -e production && cp dist/index.html dist/200.html && surge dist counterfactual.byjohnmichael.com",
+    "pretier:write": "yarn prettier --write .",
+    "prettier:check": "yarn prettier ."
   },
   "author": "",
   "license": "ISC",
@@ -41,6 +43,7 @@
     "eslint": "^3.10.2",
     "eslint-config-rtablada": "^4.0.0",
     "eslint-plugin-html": "^2.0.0",
+    "prettier": "^2.7.1",
     "rollup-plugin-commonjs": "^7.0.0",
     "rollup-plugin-node-builtins": "^2.0.0",
     "rollup-plugin-node-globals": "^1.1.0",
