@@ -12,7 +12,7 @@ In this guide, we’ll build a simple game using the Counterfactual framework. T
 
 ### Counterfactual Implements Virtual Channels
 
-Counterfactual is designed to build state-channel web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). In the hub-and-spoke model, each user already has an established ledger channel (a spoke) with a server-like entity (the hub). Users with established ledger channels to a common hub can participate in [virtual state channels](https://medium.com/blockchannel/state-channel-for-dummies-part-4-f3ba9d76c7c4): by cleverly allocating funds in the ledger channels, the users can enter into agreements that behave like a new state channel its own application logic.  In this guide, we'll use the Counterfactual framework to build a web app that implements a game of High Roller in virtual state channels (with Playground Server as the hub).
+Counterfactual is designed to build state-channel web apps with a [hub-and-spoke model](https://medium.com/blockchannel/state-channels-for-dummies-part-3-10b25f6c08b). In the hub-and-spoke model, each user already has an established ledger channel (a spoke) with a server-like entity (the hub). Users with established ledger channels to a common hub can participate in [virtual state channels](https://medium.com/blockchannel/state-channel-for-dummies-part-4-f3ba9d76c7c4): by cleverly allocating funds in the ledger channels, the users can enter into agreements that behave like a new state channel its own application logic. In this guide, we'll use the Counterfactual framework to build a web app that implements a game of High Roller in virtual state channels (with Playground Server as the hub).
 
 INSERT DIAGRAM VCHANN HERE
 
@@ -37,12 +37,11 @@ The application logic for a Counterfactual app must include structures and metho
 
 Take a look at [HighRoller.sol](https://github.com/counterfactual/monorepo/blob/master/packages/apps/contracts/HighRollerApp.sol) to see how it addresses each of the questions. We'll also run through this together in the next [section](https://github.com/counterfactual/website/blob/joey-editing/server/docs/getting-started.md#a-quick-look-at-the-contract).
 
+### Counterfactual Interface for Virtual State Channels
 
-### Counterfactual Interface for Virtual State Channels 
+In this Getting Started Guide, we'll be building a web app that implements a game of **High Roller** as a Counterfactual `AppInstance`.
 
-In this Getting Started Guide, we'll be building a web app that implements a game of **High Roller** as a Counterfactual `AppInstance`. 
-
-Each `AppInstance` is created by a Counterfactual `AppFactory` object. The `AppFactory` specifies the underlying application logic for the `AppInstance`, and which Counterfactual `Provider` object can listen in the channel. 
+Each `AppInstance` is created by a Counterfactual `AppFactory` object. The `AppFactory` specifies the underlying application logic for the `AppInstance`, and which Counterfactual `Provider` object can listen in the channel.
 
 By following along with this Getting Started Guide, you'll learn how to:
 
@@ -54,11 +53,9 @@ By following along with this Getting Started Guide, you'll learn how to:
 1. Use the `AppInstance`'s `takeAction()` method to [progress state](https://specs.counterfactual.com/en/latest/01-app-definition.html#progressing-state) in the virtual channel
 1. Use the `AppInstance`'s `uninstall()` method to uninstall and resolve the financial stakes
 
-
 One more thing: to streamline development of your first dapp, we've built and deployed a bot that will accept installs and play **HighRoller**. This means we only have to code the game interface for the first player of **HighRoller**.
 
-
----------
+---
 
 ## A Quick Look at the Contract
 
@@ -67,10 +64,11 @@ Let's take a quick look at the [HighRoller.sol](https://github.com/counterfactua
 ### Game logic for HighRoller.sol
 
 We want to make our dice game very secure: the application logic requires both users to submit a random number -- the product of the two numbers is used as the source of randomness for both players' dice rolls; this is what makes it secure. In order to prevent the second player from using information about the first player's number, we use a commit-by-hash and reveal paradigm:
-  * The first player submits a **hash** of their **number** with a random **salt**
-  * The second player submits their **number**
-  * The first player **reveals** their number by submitting the number and the salt, which are checked against the original hash
-  * The contract generates die rolls for each player
+
+- The first player submits a **hash** of their **number** with a random **salt**
+- The second player submits their **number**
+- The first player **reveals** their number by submitting the number and the salt, which are checked against the original hash
+- The contract generates die rolls for each player
 
 The information above is enough to determine the structure of the **HighRoller** `AppState` and `Action`, both of which are required for Counterfactual Apps. We also note the data structures `ActionType` and `Stage` that the contract developer chose to create:
 
@@ -195,13 +193,11 @@ function highRoller(bytes32 randomness)
   }
 ```
 
-
-----------
+---
 
 # Getting Started
 
-----------
-
+---
 
 ## Setting up the repo
 
@@ -215,18 +211,17 @@ truffle unbox counterfactual/truffle-box
 
 In the box, you'll find `src/app.js`, which we'll use as a starting point for developing the High Roller web app user interface. In `app.js` you'll find:
 
-* some initialized variables ( `let web3Provider, nodeProvider;` )
-* the async function `run()` which contains calls to
-    * initWeb3() -> initializes Web3
-    * initContract() -> use Truffle to create a TruffleContract object; used for dynamic fetching of contract address and content
-    * setupCF() -> setup for the Counterfactual `NodeProvider`
-    * install() 
-* a call to the `run()` function
+- some initialized variables ( `let web3Provider, nodeProvider;` )
+- the async function `run()` which contains calls to
+  - initWeb3() -> initializes Web3
+  - initContract() -> use Truffle to create a TruffleContract object; used for dynamic fetching of contract address and content
+  - setupCF() -> setup for the Counterfactual `NodeProvider`
+  - install()
+- a call to the `run()` function
 
 Throughout this guide, we'll be using `app.js` as our reference for developing `HighRoller.js`.
 
-
-----------
+---
 
 ## initContract()
 
@@ -234,7 +229,7 @@ This is where you'll create a `TruffleContract` object corresponding to the **Hi
 
 ```typescript
 async function initContract() {
-  let res = await fetch('HighRollerApp.json')
+  let res = await fetch("HighRollerApp.json");
   let HighRollerAppArtifact = await res.json();
   let HighRollerApp = TruffleContract(HighRollerAppArtifact);
 
@@ -243,15 +238,13 @@ async function initContract() {
 }
 ```
 
-----------
-
+---
 
 ## Counterfactual's Provider and AppFactory Objects
 
-We've described how the Counterfactual framework depends on `AppInstance`s. Every `AppInstance` is created by an `AppFactory` instance. An `AppFactory` is just what it sounds like: an object designed to produce `AppInstances` of a certain type. In this section, we'll create an `AppFactory` that produces `AppInstances` with underlying logic given by **HighRoller.sol**. 
+We've described how the Counterfactual framework depends on `AppInstance`s. Every `AppInstance` is created by an `AppFactory` instance. An `AppFactory` is just what it sounds like: an object designed to produce `AppInstances` of a certain type. In this section, we'll create an `AppFactory` that produces `AppInstances` with underlying logic given by **HighRoller.sol**.
 
-The `AppFactory` also specifies which Counterfactual `Provider` object can listen for state updates in the `AppInstances` it creates, and it specifies the encoding (TO DO: say a few words about encoding). 
-
+The `AppFactory` also specifies which Counterfactual `Provider` object can listen for state updates in the `AppInstances` it creates, and it specifies the encoding (TO DO: say a few words about encoding).
 
 ### The install() function
 
@@ -259,36 +252,51 @@ Let's instantiate a Counterfactual `Provider` and `AppFactory` instance.
 
 ```typescript
 async function install() {
-  const contractAddress = '0x91907355C59BA005843E791c88aAB80b779446c9';
-  const actionEncoding = 'tuple(uint8 actionType, uint256 number, bytes32 actionHash)';
-  const stateEncoding = 'tuple(address[2] playerAddrs, uint8 stage, bytes32 salt, bytes32 commitHash, uint256 playerFirstNumber, uint256 playerSecondNumber)'
+  const contractAddress = "0x91907355C59BA005843E791c88aAB80b779446c9";
+  const actionEncoding =
+    "tuple(uint8 actionType, uint256 number, bytes32 actionHash)";
+  const stateEncoding =
+    "tuple(address[2] playerAddrs, uint8 stage, bytes32 salt, bytes32 commitHash, uint256 playerFirstNumber, uint256 playerSecondNumber)";
 
   let cfProvider = new cf.Provider(nodeProvider);
-  let appFactory = new cf.AppFactory(contractAddress, {
-    actionEncoding,
-    stateEncoding
-  }, cfProvider);
+  let appFactory = new cf.AppFactory(
+    contractAddress,
+    {
+      actionEncoding,
+      stateEncoding,
+    },
+    cfProvider
+  );
 }
 ```
 
-
 ### Creating an AppInstance
 
-Now that we've got our `AppFactory` object, we'll want to create an `AppInstance`. The only way to create an `AppInstance` is to have the `AppFactory` propose a virtual install to the other participants; if they accept, we'll have successfully created our `AppInstance`. 
+Now that we've got our `AppFactory` object, we'll want to create an `AppInstance`. The only way to create an `AppInstance` is to have the `AppFactory` propose a virtual install to the other participants; if they accept, we'll have successfully created our `AppInstance`.
 
 Before we actually propose a game, we'll need to be able to get user data from the Counterfactual Playground Server, so let's include the following functions:
 
 ```typescript
 async function getUserData() {
-  return (await requestDataFromPG("playground:request:user", "playground:response:user")).data.user;
+  return (
+    await requestDataFromPG(
+      "playground:request:user",
+      "playground:response:user"
+    )
+  ).data.user;
 }
 
 async function getOpponentData() {
-  return (await requestDataFromPG("playground:request:matchmake", "playground:response:matchmake")).data.attributes;
+  return (
+    await requestDataFromPG(
+      "playground:request:matchmake",
+      "playground:response:matchmake"
+    )
+  ).data.attributes;
 }
 
 async function requestDataFromPG(requestName, responseName) {
-  return await new Promise(resolve => {
+  return await new Promise((resolve) => {
     const onPGResponse = (event) => {
       if (event.data.toString().startsWith(responseName)) {
         window.removeEventListener("message", onPGResponse);
@@ -313,16 +321,15 @@ async function requestDataFromPG(requestName, responseName) {
       window.postMessage(
         {
           type: "PLUGIN_MESSAGE",
-          data: { message: requestName }
+          data: { message: requestName },
         },
         "*"
       );
     } else {
       window.parent.postMessage(requestName, "*");
     }
-  })
+  });
 }
-
 ```
 
 and collect the account information when we call the `run()` function:
@@ -332,29 +339,26 @@ let web3Provider, nodeProvider, account;
 
 async function run() {
   account = await getUserData();
-  
+
   bindEvents();
   await initWeb3();
   await initContract();
   await setupCF();
   await install();
 }
-
 ```
 
 Now we're ready to `proposeVirtualInstall()`.
 
-
-----------
+---
 
 When proposing a virtual install to another player, we'll need to specify:
-  * initial state for the channel
-  * who is participating in the channel
-  * what are the stakes for each player (and in what currency)
-  * a timeout variable
-  * which intermediary we'll be using.
-  
 
+- initial state for the channel
+- who is participating in the channel
+- what are the stakes for each player (and in what currency)
+- a timeout variable
+- which intermediary we'll be using.
 
 ```typescript
 async function install() {
@@ -405,36 +409,38 @@ async function proposeInstall(appFactory) {
 }
 ```
 
-
 ### The Provider's on() Method
 
 The `install()` function is also where we instruct the `Provider` to **listen** in the channel for
-  * a successful `proposeInstallVirtual()`
-  * any changes to state in the virtual channel
-and to react to those changes via the `Provider` method `on()`. 
+
+- a successful `proposeInstallVirtual()`
+- any changes to state in the virtual channel
+  and to react to those changes via the `Provider` method `on()`.
 
 ```typescript
-    async function install() {
-      resetGameState();
+async function install() {
+  resetGameState();
 
-      let cfProvider = new cf.Provider(nodeProvider);
-      let appFactory = new cf.AppFactory(contractAddress, {
-        actionEncoding: " ",
-        stateEncoding: " "
-      }, cfProvider);
+  let cfProvider = new cf.Provider(nodeProvider);
+  let appFactory = new cf.AppFactory(
+    contractAddress,
+    {
+      actionEncoding: " ",
+      stateEncoding: " ",
+    },
+    cfProvider
+  );
 
-      proposeInstall(appFactory);
+  proposeInstall(appFactory);
 
-      cfProvider.on('installVirtual', onInstallEvent);
-      cfProvider.on('updateState', onUpdateEvent);
-    }
+  cfProvider.on("installVirtual", onInstallEvent);
+  cfProvider.on("updateState", onUpdateEvent);
+}
 ```
 
 When cfProvider detects `installVirtual` (when the bot accepts our `proposeInstallVirtual()`) it calls the function `onInstallEvent()`; when it detects `updateState` (updates in state in the virtual channel), it calls `onUpdateEvent()`.
 
-
-----------
-
+---
 
 ## Responding to installVirtual
 
@@ -456,7 +462,7 @@ We'll also jump back up to `run()`, call `bindEvents()`, and implement it.
 
 ```typescript
 async function run() {
-  
+
   bindEvents();
   await initWeb3();
   await initContract();
@@ -471,7 +477,7 @@ function bindEvents() {
 }
 ```
 
-----------
+---
 
 ## Referencing ActionType and Stage
 
@@ -486,32 +492,31 @@ const HighRollerAction = {
   START_GAME: 0,
   COMMIT_TO_HASH: 1,
   COMMIT_TO_NUM: 2,
-  REVEAL: 3
-}
+  REVEAL: 3,
+};
 
 const HighRollerStage = {
   PRE_GAME: 0,
   COMMITTING_HASH: 1,
   COMMITTING_NUM: 2,
   REVEALING: 3,
-  DONE: 4
+  DONE: 4,
 };
 ```
 
-----------
-
+---
 
 ## The takeAction() Method of appInstance
 
 Before we implement the `roll()` function, we need to describe how we make updates to state in the virtual channel.
-    
+
 The only way to make changes to state is via the `takeAction()` method of `appInstance`, which we implement now as a global function:
 
 ```typescript
 async function takeAction(params) {
-  currentGame.highRollerState = (await currentGame.appInstance.takeAction(
+  currentGame.highRollerState = await currentGame.appInstance.takeAction(
     params
-  ));
+  );
 }
 ```
 
@@ -519,10 +524,9 @@ We’re ready to implement the `roll()` function. This button will do a few thin
 
 1. It moves the game stage forward from `Stage.PRE_GAME` to `Stage.COMMITTING_HASH` by the `START_GAME` action
 1. Then, since it’s still the first player’s turn, we’ll need to take the `COMMIT_TO_HASH` action, which involves
-    1. Generating our player’s number
-    1. Generating our player’s salt
-    1. Updating `state.commitHash` (with the COMMIT_TO_HASH action) to record the hash of our number and salt
-    
+   1. Generating our player’s number
+   1. Generating our player’s salt
+   1. Updating `state.commitHash` (with the COMMIT_TO_HASH action) to record the hash of our number and salt
 
 The `START_GAME` action only uses `ActionType`, so we include that and leave the rest as zero:
 
@@ -534,7 +538,7 @@ async function roll() {
     await takeAction({
       number: 0,
       actionType: HighRollerAction.START_GAME,
-      actionHash: HashZero
+      actionHash: HashZero,
     });
   }
 }
@@ -568,13 +572,14 @@ async function roll() {
 
 This completes the first action of the game. Now we wait for the bot to receive the state in `COMMITTING_NUM` stage and apply the `COMMIT_TO_NUM` action, taking the game state into the `REVEALING` stage and back into our player's hands.
 
-----------
+---
 
 ## onUpdateEvent()
 
-Once the bot has received our state, it will `COMMIT_TO_NUM` progressing `state.Stage` into the `REVEALING` stage. Our `cfProvider` will catch the state update in the channel, and in response we need to 
-  * code our player’s `REVEAL` action for the `REVEALING` stage, moving the `state.Stage` into the `DONE` stage
-  * code an end for the game in the `DONE` stage.
+Once the bot has received our state, it will `COMMIT_TO_NUM` progressing `state.Stage` into the `REVEALING` stage. Our `cfProvider` will catch the state update in the channel, and in response we need to
+
+- code our player’s `REVEAL` action for the `REVEALING` stage, moving the `state.Stage` into the `DONE` stage
+- code an end for the game in the `DONE` stage.
 
 We'll do this now with the `onUpdateEvent()` function:
 
@@ -582,7 +587,7 @@ We'll do this now with the `onUpdateEvent()` function:
 async function onUpdateEvent({ data }) {
   const highRollerState = {
     ...data.newState,
-    playerFirstNumber: currentGame.playerFirstNumber
+    playerFirstNumber: currentGame.playerFirstNumber,
   };
 
   if (highRollerState.stage === HighRollerStage.REVEALING) {
@@ -593,8 +598,7 @@ async function onUpdateEvent({ data }) {
 }
 ```
 
-----------
-
+---
 
 ## revealDice()
 
@@ -605,23 +609,23 @@ async function revealDice(highRollerState) {
   await currentGame.appInstance.takeAction({
     actionType: HighRollerAction.REVEAL,
     actionHash: numberSalt,
-    number: highRollerState.playerFirstNumber.toString()
+    number: highRollerState.playerFirstNumber.toString(),
   });
 }
 ```
 
-----------
-
+---
 
 ## completeGame()
 
 The `completeGame()` function will do two things:
-  * retrieve information about the conclusion of the game from the contract, so that this information can be presented to the user
-  * proposes uninstalling the appInstance (which will also resolve any transactions, like distributing the staked ether to the player with the higher roll total).
+
+- retrieve information about the conclusion of the game from the contract, so that this information can be presented to the user
+- proposes uninstalling the appInstance (which will also resolve any transactions, like distributing the staked ether to the player with the higher roll total).
 
 The only way to uninstall a virtual state channel is with a call to `appInstance.uninstall()`; in order for this call to be valid, the `isStateTerminal()` function (in **HighRoller.sol**) must return `True` when applied to the current state.
 
-We'll also build a function called `executeContract()`: it reads in a function called `highRoller()` from the `HighRollerApp` TruffleContract object, and uses this function to display the results of the game. 
+We'll also build a function called `executeContract()`: it reads in a function called `highRoller()` from the `HighRollerApp` TruffleContract object, and uses this function to display the results of the game.
 
 ```typescript
 async function completeGame(highRollerState) {
@@ -637,19 +641,17 @@ async function completeGame(highRollerState) {
     myRoll,
     opponentRoll,
     gameState,
-    highRollerState
+    highRollerState,
   });
 
-  await currentGame.appInstance.uninstall(currentGame.appInstance.intermediaries[0]);
+  await currentGame.appInstance.uninstall(
+    currentGame.appInstance.intermediaries[0]
+  );
 
   resetApp();
 }
 
-
-async function executeContract(
-  num1,
-  num2
-) {
+async function executeContract(num1, num2) {
   const randomness = solidityKeccak256(["uint256"], [num1.mul(num2)]);
 
   // Connect to the network
@@ -659,8 +661,8 @@ async function executeContract(
   // have read-only access to the Contract. We also specify the contract method.
 
   const abi = [
-  "function highRoller(bytes32 randomness) public pure returns(uint8 playerFirstTotal, uint8 playerSecondTotal)"
-];
+    "function highRoller(bytes32 randomness) public pure returns(uint8 playerFirstTotal, uint8 playerSecondTotal)",
+  ];
 
   const contract = new ethers.Contract(contractAddress, abi, provider);
 
@@ -668,7 +670,7 @@ async function executeContract(
 
   return {
     playerFirstRoll: getDieNumbers(result[0]),
-    playerSecondRoll: getDieNumbers(result[1])
+    playerSecondRoll: getDieNumbers(result[1]),
   };
 }
 ```
@@ -676,7 +678,6 @@ async function executeContract(
 The function `getDieNumbers()` will present the user with (manufactured) dice rolls that add up to their total score.
 
 ```typescript
-
 function getDieNumbers(totalSum) {
   // Choose result for each die.
   if (totalSum === 12) {
@@ -693,10 +694,9 @@ function getDieNumbers(totalSum) {
 
   return [totalSum / 2, totalSum / 2];
 }
-
 ```
 
-----------
+---
 
 ## Game reset
 
@@ -725,25 +725,33 @@ function generateSalt() {
 }
 ```
 
-----------
+---
 
 ## Filling in some UI
 
 The rest is good old UI for the game
 
 ```typescript
-
 function updateUIState(uiState) {
-  document.querySelector("#gameResult").innerHTML = announceGameState(uiState.gameState);
-  document.querySelector("#yourRoll").innerHTML = `Your roll: ${uiState.myRoll[0]} + ${uiState.myRoll[1]}`;
-  document.querySelector("#opponentRoll").innerHTML = `Their roll: ${uiState.opponentRoll[0]} + ${uiState.opponentRoll[1]}`;
+  document.querySelector("#gameResult").innerHTML = announceGameState(
+    uiState.gameState
+  );
+  document.querySelector(
+    "#yourRoll"
+  ).innerHTML = `Your roll: ${uiState.myRoll[0]} + ${uiState.myRoll[1]}`;
+  document.querySelector(
+    "#opponentRoll"
+  ).innerHTML = `Their roll: ${uiState.opponentRoll[0]} + ${uiState.opponentRoll[1]}`;
 }
 
 function announceGameState(gameState) {
   switch (gameState) {
-    case 1: return "You won!!";
-    case 2: return "You lost...";
-    case 3: return "You tied?";
+    case 1:
+      return "You won!!";
+    case 2:
+      return "You lost...";
+    case 3:
+      return "You tied?";
   }
 }
 
@@ -758,23 +766,24 @@ function revealButton() {
 }
 
 function disableButton() {
-  document.querySelector('#rollBtn').disabled = true;
+  document.querySelector("#rollBtn").disabled = true;
 }
 
 function enableButton() {
-  document.querySelector('#rollBtn').disabled = false;
+  document.querySelector("#rollBtn").disabled = false;
 }
 ```
-----------
+
+---
 
 ## Our HTML
 
 ```html
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>High Roller</title>
 
@@ -810,27 +819,28 @@ function enableButton() {
 </html>
 ```
 
-----------
-
+---
 
 ## Conclusion
 
 You've just built your first state channels dapp with the Counterfactul framework. Along the way, you learned how:
-  * to set up an `AppFactory` instance with
-    - application logic designated by an ethereum contract
-    - appropriate encodings for `AppState` and `Action` in the channel 
-    - the `Provider` instance which is enabled to interact `appFactory` instances
-  * to propose a virtual state channel, or `appInstance`, to other users with `appFactory`'s `proposeVirtualInstall()` method
-  * the virtual channel is funded by a ledger channel with the `Intermediary`
-  * the `Provider` instance `cfProvider` listens in the channel for `virtualInstall` and `updateState`
-  * we use the `appInstance`'s method `takeAction()` to modify state in the channel
-  * to uninstall the virtual channel via the `appInstance`'s method `uninstall()`
+
+- to set up an `AppFactory` instance with
+  - application logic designated by an ethereum contract
+  - appropriate encodings for `AppState` and `Action` in the channel
+  - the `Provider` instance which is enabled to interact `appFactory` instances
+- to propose a virtual state channel, or `appInstance`, to other users with `appFactory`'s `proposeVirtualInstall()` method
+- the virtual channel is funded by a ledger channel with the `Intermediary`
+- the `Provider` instance `cfProvider` listens in the channel for `virtualInstall` and `updateState`
+- we use the `appInstance`'s method `takeAction()` to modify state in the channel
+- to uninstall the virtual channel via the `appInstance`'s method `uninstall()`
 
 You've also seen a little bit of the coding patterns for Counterfactual App solidity contracts, including the necessary data types
-  * `Action`
-  * `AppState`
-and functions
-  * `getTurnTaker()`
-  * `isStateTerminal()`
-  * `applyAction()`
-  * `resolve()`.
+
+- `Action`
+- `AppState`
+  and functions
+- `getTurnTaker()`
+- `isStateTerminal()`
+- `applyAction()`
+- `resolve()`.

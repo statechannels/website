@@ -1,8 +1,8 @@
 module.exports = {
-  extends: 'rtablada',
+  extends: "rtablada",
 
   // Uncomment this for vuejs template linting
   // plugins: [
   //   'html',
   // ],
-}
+};

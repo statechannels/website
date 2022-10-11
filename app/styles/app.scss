@@ -6,7 +6,6 @@ $c-darkgrey: #707070;
 $c-lightgrey: #e6e6e6;
 $c-editor-bg: #f7f9fa;
 
-
 // Font Sizes
 $f-rem: 16px;
 $f-xs: 0.875rem;
@@ -16,9 +15,7 @@ $f-small-heading: 1.25rem;
 $f-subheading: 1.625rem;
 $f-heading: 2.5rem;
 
-
 $site-max-width: 1140px;
-
 
 // Screens
 $screen-md: 1000px;
@@ -26,33 +23,30 @@ $screen-tablet: 767px;
 $screen-mobile: 600px;
 $screen-xs: 374px;
 
-
 // Transitions
 $transition-speed: 200ms;
 
+@import url("https://fonts.googleapis.com/css?family=Chivo:300,400");
+@import "box-sizing";
+@import "resets";
+@import "typography";
+@import "layout";
 
-@import url('https://fonts.googleapis.com/css?family=Chivo:300,400');
-@import 'box-sizing';
-@import 'resets';
-@import 'typography';
-@import 'layout';
+@import "components/navbar";
+@import "components/mobile-menu";
+@import "components/callout";
+@import "components/hero";
+@import "components/list";
+@import "components/team-list";
+@import "components/footer";
+@import "components/buttons";
 
-@import 'components/navbar';
-@import 'components/mobile-menu';
-@import 'components/callout';
-@import 'components/hero';
-@import 'components/list';
-@import 'components/team-list';
-@import 'components/footer';
-@import 'components/buttons';
+@import "pages/team";
+@import "pages/standards";
 
-@import 'pages/team';
-@import 'pages/standards';
+@import "markdown";
 
-@import 'markdown';
-
-@import 'helpers';
-
+@import "helpers";
 
 .flexer {
   display: flex;
