@@ -1,3 +1,17 @@
+.callout-banner {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #cf2d20;
+  color: white;
+  padding: 8px 8px 10px;
+
+  a {
+    color: white;
+  }
+}
+
 .section--callout {
   position: relative;
   display: flex;
