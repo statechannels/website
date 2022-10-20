@@ -1,3 +1,19 @@
+.callout-banner {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: red;
+  color: white;
+  text-align: center;
+  padding: 8px 8px 10px;
+  font-weight: bold;
+
+  a {
+    color: white;
+  }
+}
+
 .section--callout {
   position: relative;
   display: flex;
