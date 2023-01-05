@@ -15,3 +15,5 @@ yarn start
 ```
 
 and visit http://localhost:4200 (as per [ember documentation](https://cli.emberjs.com/release/basic-use/cli-commands/)).
+
+Site is deployed to https://statechannels.org
