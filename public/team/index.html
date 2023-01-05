@@ -366,9 +366,14 @@
                   transform="translate(-140.84 -264.15)"
                 />
               </svg>
-              <p class="footer__left__text">
-                Copyright © 2022 State Channels contributors
-              </p>
+              <div id="copyright"></div>
+              <script>
+                const paragraph = `
+                <p class="footer__left__text">
+                  Copyright &copy; ${new Date().getFullYear()} State Channels contributors
+                </p>`;
+                document.getElementById("copyright").innerHTML = paragraph;
+              </script>
             </div>
 
             <div class="footer__right">
