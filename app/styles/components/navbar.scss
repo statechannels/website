@@ -1,5 +1,6 @@
 .section--nav {
   padding: 1rem;
+  z-index: 100;
 }
 
 .nav {
@@ -37,6 +38,119 @@
 
       &:hover {
         color: $c-blue;
+      }
+
+      &.active {
+        position: relative;
+        color: $c-blue;
+
+        &::before {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          bottom: -0.5rem;
+          width: 65%;
+          height: 1px;
+          background-color: $c-blue;
+          content: "";
+        }
+      }
+    }
+  }
+
+  &__dropdown__papers {
+    list-style: none;
+    float: right;
+
+    &__list {
+      padding-top: 8px;
+      margin: 0;
+      padding-bottom: 8px;
+      position: absolute;
+      text-align: left;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      padding-left: 1.5rem;
+      background-color: white;
+    }
+
+    &__list {
+      display: none;
+    }
+
+    &:hover &__list,
+    &__list:hover {
+      display: block;
+    }
+
+    &__item {
+      position: relative;
+      line-height: 30px;
+      font-size: 1.125rem;
+      color: $c-black;
+      cursor: pointer;
+      transition: color $transition-speed;
+
+      &:hover {
+        color: $c-blue;
+        display: block;
+      }
+
+      &.active {
+        position: relative;
+        color: $c-blue;
+
+        &::before {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          bottom: -0.5rem;
+          width: 65%;
+          height: 1px;
+          background-color: $c-blue;
+          content: "";
+        }
+      }
+    }
+  }
+
+  &__dropdown {
+    list-style: none;
+
+    &__list {
+      padding-top: 8px;
+      margin: 0;
+      padding-bottom: 8px;
+      position: absolute;
+      text-align: right;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      padding-left: 2.1875rem;
+      background-color: white;
+    }
+
+    &__list {
+      display: none;
+    }
+
+    &:hover &__list,
+    &__list:hover {
+      display: block;
+    }
+
+    &__item {
+      position: relative;
+      line-height: 30px;
+      font-size: 1.125rem;
+      color: $c-black;
+      cursor: pointer;
+      transition: color $transition-speed;
+
+      &:hover {
+        color: $c-blue;
+        display: block;
       }
 
       &.active {
