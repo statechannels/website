@@ -185,6 +185,19 @@
                 href="https://blog.statechannels.org"
                 >blog.</a
               >
+              <li class="nav__dropdown">
+                <a class="nav__right__item">contact.</a>
+                <ul class="nav__dropdown__list">
+                  <li>
+                    <a
+                      class="nav__dropdown__item"
+                      target="_blank"
+                      href="mailto:contact@magmo.com"
+                      >email.</a
+                    >
+                  </li>
+                </ul>
+              </li>
             </nav>
             <!-- /if desktop -->
 
@@ -197,31 +210,49 @@
 
           <div class="mobile-menu mobile-only">
             <button class="mobile-menu__close">close</button>
-            <a class="mobile-menu__item active" href="/team">team.</a>
-            <a
-              class="mobile-menu__item"
-              target="_blank"
-              href="https://docs.statechannels.org"
-              >docs.</a
-            >
-            <a
-              class="mobile-menu__item"
-              target="_blank"
-              href="https://github.com/statechannels"
-              >github.</a
-            >
-            <a
-              class="mobile-menu__item"
-              target="_blank"
-              href="https://research.statechannels.org"
-              >forum.</a
-            >
-            <a
-              class="mobile-menu__item"
-              target="_blank"
-              href="https://blog.statechannels.org"
-              >blog.</a
-            >
+            <ul>
+              <a class="mobile-menu__item active" href="/team">team.</a>
+              <a
+                class="mobile-menu__item"
+                target="_blank"
+                href="https://docs.statechannels.org"
+                >docs.</a
+              >
+              <a
+                class="mobile-menu__item"
+                target="_blank"
+                href="https://github.com/statechannels"
+                >github.</a
+              >
+              <a
+                class="mobile-menu__item"
+                target="_blank"
+                href="https://research.statechannels.org"
+                >forum.</a
+              >
+              <a
+                class="mobile-menu__item"
+                target="_blank"
+                href="https://blog.statechannels.org"
+                >blog.</a
+              >
+              <li class="mobile-menu__item">
+                <label for="drop" class="mobile-submenu-toggle"
+                  >contact +</label
+                >
+                <input type="checkbox" id="drop" />
+                <ul class="mobile-menu__level1">
+                  <li class="mobile-menu__item__sub">
+                    <a
+                      target="_blank"
+                      href="mailto:research@magmo.com"
+                      class="mobile-menu__item__sub"
+                      >email.</a
+                    >
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -353,9 +384,14 @@
                   transform="translate(-140.84 -264.15)"
                 />
               </svg>
-              <p class="footer__left__text">
-                Copyright © 2022 State Channels contributors
-              </p>
+              <div id="copyright"></div>
+              <script>
+                const paragraph = `
+                <p class="footer__left__text">
+                  Copyright &copy; ${new Date().getFullYear()} State Channels contributors
+                </p>`;
+                document.getElementById("copyright").innerHTML = paragraph;
+              </script>
             </div>
 
             <div class="footer__right">
